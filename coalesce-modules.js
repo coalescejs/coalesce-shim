@@ -3,9 +3,9 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.cc6dd74a
+ * @version   0.4.0+dev.ac8605c1
  */
-define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './rest/rest_errors', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__21,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69) {
+define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69) {
   "use strict";
   var __moduleName = "coalesce";
   if (!$__0 || !$__0.__esModule)
@@ -30,8 +30,8 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
     $__18 = {'default': $__18};
   if (!$__20 || !$__20.__esModule)
     $__20 = {'default': $__20};
-  if (!$__21 || !$__21.__esModule)
-    $__21 = {'default': $__21};
+  if (!$__22 || !$__22.__esModule)
+    $__22 = {'default': $__22};
   if (!$__23 || !$__23.__esModule)
     $__23 = {'default': $__23};
   if (!$__25 || !$__25.__esModule)
@@ -87,19 +87,19 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   var IdManager = $__8.default;
   var ModelArray = $__10.default;
   var ModelSet = $__12.default;
-  var MergeStrategy = $__14.default;
-  var PerField = $__16.default;
-  var Model = $__18.default;
-  $__20;
-  var Errors = $__21.default;
-  var RestErrorsSerializer = $__23.default;
-  var PayloadSerializer = $__25.default;
-  var EmbeddedManager = $__27.default;
-  var Operation = $__29.default;
-  var OperationGraph = $__31.default;
-  var Payload = $__33.default;
-  var RestAdapter = $__35.default;
-  var RestErrors = $__37.default;
+  var HasManyArray = $__14.default;
+  var MergeStrategy = $__16.default;
+  var PerField = $__18.default;
+  var Model = $__20.default;
+  $__22;
+  var Errors = $__23.default;
+  var RestErrorsSerializer = $__25.default;
+  var PayloadSerializer = $__27.default;
+  var EmbeddedManager = $__29.default;
+  var Operation = $__31.default;
+  var OperationGraph = $__33.default;
+  var Payload = $__35.default;
+  var RestAdapter = $__37.default;
   var ActiveModelAdapter = $__39.default;
   var ActiveModelSerializer = $__41.default;
   var Serializer = $__43.default;
@@ -122,6 +122,7 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   Coalesce.IdManager = IdManager;
   Coalesce.ModelArray = ModelArray;
   Coalesce.ModelSet = ModelSet;
+  Coalesce.HasManyArray = HasManyArray;
   Coalesce.MergeStrategy = MergeStrategy;
   Coalesce.PerField = PerField;
   Coalesce.Model = Model;
@@ -133,7 +134,6 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   Coalesce.OperationGraph = OperationGraph;
   Coalesce.Payload = Payload;
   Coalesce.RestAdapter = RestAdapter;
-  Coalesce.RestErrors = RestErrors;
   Coalesce.ActiveModelAdapter = ActiveModelAdapter;
   Coalesce.ActiveModelSerializer = ActiveModelSerializer;
   Coalesce.Serializer = Serializer;
@@ -232,7 +232,7 @@ define("coalesce/active_model/serializers/model", ['../../serializers/model', '.
   };
 });
 
-define("coalesce/adapter", ['./error', './utils/base_class', './factories/serializer', './session/session'], function($__0,$__2,$__4,$__6) {
+define("coalesce/adapter", ['./error', './utils/base_class', './factories/serializer', './session/session', './utils/array_from'], function($__0,$__2,$__4,$__6,$__8) {
   "use strict";
   var __moduleName = "coalesce/adapter";
   if (!$__0 || !$__0.__esModule)
@@ -243,15 +243,13 @@ define("coalesce/adapter", ['./error', './utils/base_class', './factories/serial
     $__4 = {'default': $__4};
   if (!$__6 || !$__6.__esModule)
     $__6 = {'default': $__6};
+  if (!$__8 || !$__8.__esModule)
+    $__8 = {'default': $__8};
   var Error = $__0.default;
-  function mustImplement(name) {
-    return function() {
-      throw new Error("Your adapter " + this.toString() + " does not implement the required method " + name);
-    };
-  }
   var BaseClass = $__2.default;
   var SerializerFactory = $__4.default;
   var Session = $__6.default;
+  var array_from = $__8.default;
   var Adapter = function Adapter() {
     this.configs = {};
     this.container = this.setupContainer(this.container);
@@ -297,7 +295,7 @@ define("coalesce/adapter", ['./error', './utils/base_class', './factories/serial
       if (deserialized.isModel) {
         return this.merge(deserialized, session);
       } else {
-        return Array.from(deserialized).map(function(model) {
+        return array_from(deserialized).map(function(model) {
           return this.merge(model, session);
         }, this);
       }
@@ -313,6 +311,11 @@ define("coalesce/adapter", ['./error', './utils/base_class', './factories/serial
     }
   }, {}, BaseClass);
   var $__default = Adapter;
+  function mustImplement(name) {
+    return function() {
+      throw new Error("Your adapter " + this.toString() + " does not implement the required method " + name);
+    };
+  }
   Adapter.reopen({
     mergeError: Adapter.mergeData,
     willMergeModel: function() {},
@@ -713,15 +716,18 @@ define("coalesce/collections/model_set", ['../utils/base_class'], function($__0)
   };
 });
 
-define("coalesce/collections/observable_array", ['../error', '../utils/copy'], function($__0,$__2) {
+define("coalesce/collections/observable_array", ['../error', '../utils/copy', '../utils/array_from'], function($__0,$__2,$__4) {
   "use strict";
   var __moduleName = "coalesce/collections/observable_array";
   if (!$__0 || !$__0.__esModule)
     $__0 = {'default': $__0};
   if (!$__2 || !$__2.__esModule)
     $__2 = {'default': $__2};
+  if (!$__4 || !$__4.__esModule)
+    $__4 = {'default': $__4};
   var Error = $__0.default;
   var copy = $__2.default;
+  var array_from = $__4.default;
   var EMPTY = [],
       splice = Array.prototype.splice;
   var ObservableArray = function ObservableArray() {
@@ -793,7 +799,7 @@ define("coalesce/collections/observable_array", ['../error', '../utils/copy'], f
       return this;
     },
     toArray: function() {
-      return Array.from(this);
+      return array_from(this);
     },
     setObjects: function(objects) {
       if (objects.length === 0)
@@ -927,7 +933,7 @@ define("coalesce/collections/observable_array", ['../error', '../utils/copy'], f
   };
 });
 
-define("coalesce/container", ['./container/container', './session/session', './id_manager', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './merge/per_field', './rest/rest_adapter'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__24,$__26) {
+define("coalesce/container", ['./container/container', './session/session', './id_manager', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './merge/per_field', './rest/rest_adapter', './model/errors'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__24,$__26,$__28) {
   "use strict";
   var __moduleName = "coalesce/container";
   if (!$__0 || !$__0.__esModule)
@@ -958,6 +964,8 @@ define("coalesce/container", ['./container/container', './session/session', './i
     $__24 = {'default': $__24};
   if (!$__26 || !$__26.__esModule)
     $__26 = {'default': $__26};
+  if (!$__28 || !$__28.__esModule)
+    $__28 = {'default': $__28};
   var Container = $__0.default;
   var Session = $__2.default;
   var IdManager = $__4.default;
@@ -972,7 +980,9 @@ define("coalesce/container", ['./container/container', './session/session', './i
   var StringSerializer = $__22.default;
   var PerField = $__24.default;
   var RestAdapter = $__26.default;
+  var Errors = $__28.default;
   function setupContainer(container) {
+    container.register('model:errors', Errors);
     setupSession(container);
     setupInjections(container);
     setupSerializers(container);
@@ -1583,15 +1593,18 @@ define("coalesce/id_manager", ['./utils/base_class'], function($__0) {
   };
 });
 
-define("coalesce/merge/base", [], function() {
+define("coalesce/merge/base", ['../utils/base_class'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/merge/base";
-  var Base = function Base() {};
-  ($traceurRuntime.createClass)(Base, {merge: function(ours, ancestor, theirs) {}}, {});
-  var $__default = Base;
-  Base.create = function() {
-    return new this();
+  if (!$__0 || !$__0.__esModule)
+    $__0 = {'default': $__0};
+  var BaseClass = $__0.default;
+  var Base = function Base() {
+    $traceurRuntime.defaultSuperCall(this, $Base.prototype, arguments);
   };
+  var $Base = Base;
+  ($traceurRuntime.createClass)(Base, {merge: function(ours, ancestor, theirs) {}}, {}, BaseClass);
+  var $__default = Base;
   return {
     get default() {
       return $__default;
@@ -1864,29 +1877,34 @@ define("coalesce/model/diff", ['./model', '../collections/model_set'], function(
   return {};
 });
 
-define("coalesce/model/errors", ['../utils/copy'], function($__0) {
+define("coalesce/model/errors", ['../utils/base_class'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/model/errors";
   if (!$__0 || !$__0.__esModule)
     $__0 = {'default': $__0};
-  var copy = $__0.default;
+  var BaseClass = $__0.default;
   var Errors = function Errors() {
     var obj = arguments[0] !== (void 0) ? arguments[0] : {};
     $traceurRuntime.superCall(this, $Errors.prototype, "constructor", []);
     for (var key in obj) {
       if (!obj.hasOwnProperty(key))
         continue;
-      this.set(key, obj[key]);
+      this[key] = obj[key];
     }
   };
   var $Errors = Errors;
-  ($traceurRuntime.createClass)(Errors, {copy: function() {
-      var res = new this.constructor();
-      this.forEach(function(value, key) {
-        res.set(key, copy(value));
-      });
-      return res;
-    }}, {}, Map);
+  ($traceurRuntime.createClass)(Errors, {
+    forEach: function(callback, binding) {
+      for (var key in this) {
+        if (!this.hasOwnProperty(key))
+          continue;
+        callback.call(binding, this[key], key);
+      }
+    },
+    copy: function() {
+      return new this.constructor(this);
+    }
+  }, {}, BaseClass);
   var $__default = Errors;
   return {
     get default() {
@@ -1917,7 +1935,7 @@ define("coalesce/model/field", [], function() {
   };
 });
 
-define("coalesce/model/has_many", ['./field', '../collections/has_many_array', '../utils/is_equal', '../utils/copy'], function($__0,$__2,$__4,$__6) {
+define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal', '../utils/copy'], function($__0,$__2,$__4,$__6) {
   "use strict";
   var __moduleName = "coalesce/model/has_many";
   if (!$__0 || !$__0.__esModule)
@@ -1928,8 +1946,8 @@ define("coalesce/model/has_many", ['./field', '../collections/has_many_array', '
     $__4 = {'default': $__4};
   if (!$__6 || !$__6.__esModule)
     $__6 = {'default': $__6};
-  var Field = $__0.default;
-  var HasManyArray = $__2.default;
+  var Coalesce = $__0.default;
+  var Field = $__2.default;
   var isEqual = $__4.default;
   var copy = $__6.default;
   var HasMany = function HasMany() {
@@ -1944,7 +1962,7 @@ define("coalesce/model/has_many", ['./field', '../collections/has_many_array', '
           var value = this._relationships[name];
           if (this.isNew && !value) {
             var content = value;
-            value = this._relationships[name] = new HasManyArray();
+            value = this._relationships[name] = new Coalesce.HasManyArray();
             value.owner = this;
             value.name = name;
             if (content) {
@@ -1957,10 +1975,10 @@ define("coalesce/model/has_many", ['./field', '../collections/has_many_array', '
           var oldValue = this._relationships[name];
           if (oldValue === value)
             return;
-          if (value && value instanceof HasManyArray) {
+          if (value && value instanceof Coalesce.HasManyArray) {
             value = copy(value);
           }
-          if (oldValue && oldValue instanceof HasManyArray) {
+          if (oldValue && oldValue instanceof Coalesce.HasManyArray) {
             oldValue.clear();
             if (value) {
               oldValue.addObjects(value);
@@ -1968,7 +1986,7 @@ define("coalesce/model/has_many", ['./field', '../collections/has_many_array', '
           } else {
             this.hasManyWillChange(name);
             var content = value;
-            value = this._relationships[name] = new HasManyArray();
+            value = this._relationships[name] = new Coalesce.HasManyArray();
             value.owner = this;
             value.name = name;
             if (content) {
@@ -2359,15 +2377,19 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return this._fields || (this._fields = new Map());
     },
     get attributes() {
+      if (this._attributes)
+        return this._attributes;
       var res = new Map();
       this.fields.forEach(function(options, name) {
         if (options.kind === 'attribute') {
           res.set(name, options);
         }
       });
-      return res;
+      return this._attributes = res;
     },
     get relationships() {
+      if (this._relationships)
+        return this._relationships;
       var res = new Map();
       this.fields.forEach(function(options, name) {
         if (options.kind === 'belongsTo' || options.kind === 'hasMany') {
@@ -2375,7 +2397,7 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
           res.set(name, options);
         }
       });
-      return res;
+      return this._relationships = res;
     },
     eachRelationship: function(callback, binding) {
       this.relationships.forEach(function(options, name) {
@@ -2466,18 +2488,21 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
   };
 });
 
-define("coalesce/namespace", ['backburner'], function($__0) {
+define("coalesce/namespace", [], function() {
   "use strict";
   var __moduleName = "coalesce/namespace";
-  if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
-  var Backburner = $__0.default;
-  Backburner = Backburner.Backburner;
+  var ajax = this.jQuery && this.jQuery.ajax;
+  var Backburner = this.Backburner;
+  if (requireModule && typeof requireModule === 'function') {
+    try {
+      Backburner = requireModule('backburner').Backburner;
+    } catch (e) {}
+  }
   var Coalesce = {
-    VERSION: '0.4.0+dev.cc6dd74a',
+    VERSION: '0.4.0+dev.ac8605c1',
     Promise: Promise,
-    ajax: jQuery.ajax,
-    run: new Backburner(['actions'])
+    ajax: ajax,
+    run: Backburner && new Backburner(['actions'])
   };
   var $__default = Coalesce;
   return {
@@ -2486,7 +2511,7 @@ define("coalesce/namespace", ['backburner'], function($__0) {
     },
     __esModule: true
   };
-});
+}.bind(Reflect.global));
 
 define("coalesce/rest/embedded_manager", ['../utils/base_class'], function($__0) {
   "use strict";
@@ -2618,14 +2643,18 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
     this.force = false;
     this.children = new Set();
     this.parents = new Set();
-    this._deferred = Coalesce.Promise.defer();
+    var op = this;
+    this.promise = new Coalesce.Promise(function(resolve, reject) {
+      op.resolve = resolve;
+      op.reject = reject;
+    });
   };
   ($traceurRuntime.createClass)(Operation, {
     then: function() {
       for (var args = [],
           $__3 = 0; $__3 < arguments.length; $__3++)
         args[$__3] = arguments[$__3];
-      var promise = this._deferred.promise;
+      var promise = this.promise;
       return promise.then.apply(promise, args);
     },
     get dirtyRelationships() {
@@ -2728,7 +2757,7 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
         }
         throw serverModel;
       });
-      this._deferred.resolve(promise);
+      this.resolve(promise);
       return this;
     },
     get _embeddedParent() {
@@ -2771,15 +2800,18 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
   };
 });
 
-define("coalesce/rest/operation_graph", ['./operation', '../namespace'], function($__0,$__2) {
+define("coalesce/rest/operation_graph", ['./operation', '../namespace', '../utils/array_from'], function($__0,$__2,$__4) {
   "use strict";
   var __moduleName = "coalesce/rest/operation_graph";
   if (!$__0 || !$__0.__esModule)
     $__0 = {'default': $__0};
   if (!$__2 || !$__2.__esModule)
     $__2 = {'default': $__2};
+  if (!$__4 || !$__4.__esModule)
+    $__4 = {'default': $__4};
   var Operation = $__0.default;
   var Coalesce = $__2.default;
+  var array_from = $__4.default;
   var OperationGraph = function OperationGraph(models, shadows, adapter, session) {
     this.models = models;
     this.shadows = shadows;
@@ -2795,7 +2827,7 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace'], functio
       function createNestedPromise(op) {
         var promise;
         if (op.parents.size > 0) {
-          promise = Coalesce.Promise.all(Array.from(op.parents)).then(function() {
+          promise = Coalesce.Promise.all(array_from(op.parents)).then(function() {
             return op.perform();
           });
         } else {
@@ -2810,7 +2842,7 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace'], functio
         });
         if (op.children.size > 0) {
           promise = promise.then(function(model) {
-            return Coalesce.Promise.all(Array.from(op.children)).then(function(models) {
+            return Coalesce.Promise.all(array_from(op.children)).then(function(models) {
               adapter.rebuildRelationships(models, model);
               return model;
             }, function(models) {
@@ -2891,13 +2923,16 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace'], functio
   };
 });
 
-define("coalesce/rest/payload", ['../collections/model_set'], function($__0) {
+define("coalesce/rest/payload", ['../collections/model_set', '../utils/array_from'], function($__0,$__2) {
   "use strict";
   var __moduleName = "coalesce/rest/payload";
   if (!$__0 || !$__0.__esModule)
     $__0 = {'default': $__0};
+  if (!$__2 || !$__2.__esModule)
+    $__2 = {'default': $__2};
   var isArray = Array.isArray;
   var ModelSet = $__0.default;
+  var array_from = $__2.default;
   var Payload = function Payload(iterable) {
     $traceurRuntime.superCall(this, $Payload.prototype, "constructor", [iterable]);
     this.isPayload = true;
@@ -2906,7 +2941,7 @@ define("coalesce/rest/payload", ['../collections/model_set'], function($__0) {
   };
   var $Payload = Payload;
   ($traceurRuntime.createClass)(Payload, {merge: function(session) {
-      var merged = Array.from(this).map(function(model) {
+      var merged = array_from(this).map(function(model) {
         return session.merge(model);
       }, this);
       var context = this.context;
@@ -2932,7 +2967,7 @@ define("coalesce/rest/payload", ['../collections/model_set'], function($__0) {
   };
 });
 
-define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_manager', '../collections/model_set', './operation_graph', './rest_errors', './serializers/payload', './serializers/errors', '../factories/serializer', '../utils/materialize_relationships', '../utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20) {
+define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_manager', '../collections/model_set', './operation_graph', './serializers/payload', './serializers/errors', '../factories/serializer', '../utils/materialize_relationships', '../utils/inflector', '../utils/array_from'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20) {
   "use strict";
   var __moduleName = "coalesce/rest/rest_adapter";
   if (!$__0 || !$__0.__esModule)
@@ -2962,15 +2997,15 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
   var EmbeddedManager = $__4.default;
   var ModelSet = $__6.default;
   var OperationGraph = $__8.default;
-  var RestErrors = $__10.default;
-  var PayloadSerializer = $__12.default;
-  var RestErrorsSerializer = $__14.default;
-  var SerializerFactory = $__16.default;
-  var materializeRelationships = $__18.default;
-  var $__21 = $__20,
-      decamelize = $__21.decamelize,
-      pluralize = $__21.pluralize,
-      camelize = $__21.camelize;
+  var PayloadSerializer = $__10.default;
+  var RestErrorsSerializer = $__12.default;
+  var SerializerFactory = $__14.default;
+  var materializeRelationships = $__16.default;
+  var $__19 = $__18,
+      decamelize = $__19.decamelize,
+      pluralize = $__19.pluralize,
+      camelize = $__19.camelize;
+  var array_from = $__20.default;
   var RestAdapter = function RestAdapter() {
     $traceurRuntime.superCall(this, $RestAdapter.prototype, "constructor", []);
     this._embeddedManager = new EmbeddedManager(this);
@@ -3175,7 +3210,7 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
     },
     flush: function(session) {
       var models = this.buildDirtySet(session);
-      var shadows = new ModelSet(Array.from(models).map(function(model) {
+      var shadows = new ModelSet(array_from(models).map(function(model) {
         return session.shadows.getModel(model) || model.copy();
       }));
       this.removeEmbeddedOrphans(models, shadows, session);
@@ -3193,7 +3228,7 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
       }, this);
       var adapter = this;
       if (pending.size > 0) {
-        return Coalesce.Promise.all(Array.from(pending)).then(function() {
+        return Coalesce.Promise.all(array_from(pending)).then(function() {
           return adapter._performFlush(op, session);
         });
       }
@@ -3420,35 +3455,7 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
   };
 });
 
-define("coalesce/rest/rest_errors", ['../model/errors'], function($__0) {
-  "use strict";
-  var __moduleName = "coalesce/rest/rest_errors";
-  if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
-  var Errors = $__0.default;
-  var RestErrors = function RestErrors() {
-    var opts = arguments[0] !== (void 0) ? arguments[0] : {};
-    $traceurRuntime.superCall(this, $RestErrors.prototype, "constructor", [opts.content || {}]);
-    this.xhr = opts.xhr;
-    this.status = opts.status;
-  };
-  var $RestErrors = RestErrors;
-  ($traceurRuntime.createClass)(RestErrors, {copy: function() {
-      var res = $traceurRuntime.superCall(this, $RestErrors.prototype, "copy", []);
-      res.xhr = this.xhr;
-      res.stats = this.status;
-      return res;
-    }}, {}, Errors);
-  var $__default = RestErrors;
-  return {
-    get default() {
-      return $__default;
-    },
-    __esModule: true
-  };
-});
-
-define("coalesce/rest/serializers/errors", ['../rest_errors', '../../serializers/base', '../../error', '../../utils/inflector', '../../utils/is_empty'], function($__0,$__2,$__4,$__6,$__8) {
+define("coalesce/rest/serializers/errors", ['../../serializers/base', '../../error', '../../utils/inflector', '../../utils/is_empty'], function($__0,$__2,$__4,$__6) {
   "use strict";
   var __moduleName = "coalesce/rest/serializers/errors";
   if (!$__0 || !$__0.__esModule)
@@ -3459,13 +3466,10 @@ define("coalesce/rest/serializers/errors", ['../rest_errors', '../../serializers
     $__4 = {'default': $__4};
   if (!$__6 || !$__6.__esModule)
     $__6 = {'default': $__6};
-  if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
-  var RestErrors = $__0.default;
-  var Serializer = $__2.default;
-  var Error = $__4.default;
-  var camelize = $__6.camelize;
-  var isEmpty = $__8.default;
+  var Serializer = $__0.default;
+  var Error = $__2.default;
+  var camelize = $__4.camelize;
+  var isEmpty = $__6.default;
   var ErrorsSerializer = function ErrorsSerializer() {
     $traceurRuntime.defaultSuperCall(this, $ErrorsSerializer.prototype, arguments);
   };
@@ -3475,11 +3479,11 @@ define("coalesce/rest/serializers/errors", ['../rest_errors', '../../serializers
       var xhr = opts && opts.xhr;
       if (!xhr && (isEmpty(serialized) || isEmptyObject(serialized)))
         return;
-      var content = {};
+      var Type = this.container.lookupFactory('model:errors');
+      var res = Type.create();
       for (var key in serialized) {
-        content[this.transformPropertyKey(key)] = serialized[key];
+        res[this.transformPropertyKey(key)] = serialized[key];
       }
-      var res = new RestErrors({content: content});
       if (xhr) {
         res.status = xhr.status;
         res.xhr = xhr;
@@ -4346,7 +4350,7 @@ define("coalesce/session/inverse_manager", ['../collections/model_set', '../util
   };
 });
 
-define("coalesce/session/session", ['../collections/model_array', '../collections/model_set', './collection_manager', './inverse_manager', '../model/model', './cache', '../factories/type', '../factories/merge', '../utils/copy', '../error'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18) {
+define("coalesce/session/session", ['../collections/model_array', '../collections/model_set', './collection_manager', './inverse_manager', '../model/model', './cache', '../factories/type', '../factories/merge', '../utils/copy', '../error', '../utils/array_from'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20) {
   "use strict";
   var __moduleName = "coalesce/session/session";
   if (!$__0 || !$__0.__esModule)
@@ -4369,6 +4373,8 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
     $__16 = {'default': $__16};
   if (!$__18 || !$__18.__esModule)
     $__18 = {'default': $__18};
+  if (!$__20 || !$__20.__esModule)
+    $__20 = {'default': $__20};
   var ModelArray = $__0.default;
   var ModelSet = $__2.default;
   var CollectionManager = $__4.default;
@@ -4379,13 +4385,14 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
   var MergeFactory = $__14.default;
   var copy = $__16.default;
   var Error = $__18.default;
+  var array_from = $__20.default;
   var uuid = 1;
-  var Session = function Session($__21) {
-    var $__22 = $traceurRuntime.assertObject($__21),
-        adapter = $__22.adapter,
-        idManager = $__22.idManager,
-        container = $__22.container,
-        parent = $__22.parent;
+  var Session = function Session($__23) {
+    var $__24 = $traceurRuntime.assertObject($__23),
+        adapter = $__24.adapter,
+        idManager = $__24.idManager,
+        container = $__24.container,
+        parent = $__24.parent;
     this.adapter = adapter;
     this.idManager = idManager;
     this.container = container;
@@ -4597,18 +4604,8 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       }
       this.touch(model);
     },
-    destroy: function() {
-      this._super();
-      this.models.forEach(function(model) {
-        model.destroy();
-      });
-      this.models.destroy();
-      this.shadows.destroy();
-      this.originals.destroy();
-      this.newModels.destroy();
-    },
     get dirtyModels() {
-      var models = new ModelSet(Array.from(this.shadows).map(function(model) {
+      var models = new ModelSet(array_from(this.shadows).map(function(model) {
         return this.models.getModel(model);
       }, this));
       this.newModels.forEach(function(model) {
@@ -4843,12 +4840,35 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
         res += "(child of " + this.parent.toString() + ")";
       }
       return res;
-    }
-  }, {});
+    },
+    destroy: function() {}
+  }, {create: function(props) {
+      return new this(props);
+    }});
   var $__default = Session;
-  Session.create = function(props) {
-    return new this(props);
+  return {
+    get default() {
+      return $__default;
+    },
+    __esModule: true
   };
+});
+
+define("coalesce/utils/array_from", [], function() {
+  "use strict";
+  var __moduleName = "coalesce/utils/array_from";
+  var USE_NATIVE = typeof Set.prototype[Symbol.iterator] !== 'undefined';
+  function from_array(iterable) {
+    if (USE_NATIVE || Array.isArray(iterable)) {
+      return Array.from.apply(this, arguments);
+    }
+    var res = [];
+    iterable.forEach(function(value) {
+      res.push(value);
+    });
+    return res;
+  }
+  var $__default = from_array;
   return {
     get default() {
       return $__default;
@@ -4861,7 +4881,7 @@ define("coalesce/utils/base_class", [], function() {
   "use strict";
   var __moduleName = "coalesce/utils/base_class";
   var Base = function Base() {};
-  ($traceurRuntime.createClass)(Base, {}, {
+  ($traceurRuntime.createClass)(Base, {destroy: function() {}}, {
     create: function(props) {
       return new this(props);
     },

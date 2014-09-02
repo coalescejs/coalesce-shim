@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.cc6dd74a
+ * @version   0.4.0+dev.ac8605c1
  */
 define("coalesce-test/_setup", [], function() {
   "use strict";
@@ -1189,19 +1189,23 @@ define("coalesce-test/rest/_test_adapter", ['coalesce/rest/rest_adapter', 'coale
     ajax: function(url, type, hash) {
       var adapter = this;
       return new Coalesce.Promise(function(resolve, reject) {
-        var key = type + ":" + url;
-        adapter.h.push(key);
-        var json = adapter.r[key];
-        if (hash && typeof hash.data === 'string') {
-          hash.data = JSON.parse(hash.data);
-        }
-        if (!json) {
-          throw "No data for #{key}";
-        }
-        if (typeof json === 'function') {
-          json = json(url, type, hash);
-        }
         adapter.runLater(function() {
+          var key = type + ":" + url;
+          adapter.h.push(key);
+          var json = adapter.r[key];
+          if (hash && typeof hash.data === 'string') {
+            hash.data = JSON.parse(hash.data);
+          }
+          if (!json) {
+            throw "No data for #{key}";
+          }
+          if (typeof json === 'function') {
+            try {
+              json = json(url, type, hash);
+            } catch (e) {
+              reject(e);
+            }
+          }
           resolve(json);
         }, 0);
       });
@@ -1669,7 +1673,10 @@ define("coalesce-test/rest/rest.acceptance", ['./_shared', '../support/schemas',
         foo.bar = bar;
         foo.baz = baz;
         return childSession.flushIntoParent().then(function() {
-          expect(adapter.h).to.eql(['POST:/bars', 'POST:/bazs', 'POST:/foos']);
+          expect(adapter.h.length).to.eq(3);
+          expect(adapter.h[adapter.h.length - 1]).to.eq('POST:/foos');
+          expect(adapter.h).to.include('POST:/bars');
+          expect(adapter.h).to.include('POST:/bazs');
           expect(foo.id).to.not.be["null"];
           expect(bar.id).to.not.be["null"];
           expect(baz.id).to.not.be["null"];
@@ -2222,8 +2229,8 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
             return session.flush().then(null, function() {
               expect(post.hasErrors).to.be["true"];
               expect(post.title).to.eq('');
-              expect(post.errors.get('title')).to.eq('is too short');
-              expect(post.errors.get('createdAt')).to.eq('cannot be in the past');
+              expect(post.errors.title).to.eq('is too short');
+              expect(post.errors.createdAt).to.eq('cannot be in the past');
               return expect(adapter.h).to.eql(['PUT:/posts/1']);
             });
           });
@@ -2242,11 +2249,11 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
           }));
           post.title = '';
           post.errors = new Errors({title: 'is not good'});
-          expect(post.errors.get('title')).to.eq('is not good');
+          expect(post.errors.title).to.eq('is not good');
           return session.flush().then(null, function() {
             expect(post.hasErrors).to.be["true"];
             expect(post.title).to.eq('');
-            expect(post.errors.get('title')).to.eq('is too short');
+            expect(post.errors.title).to.eq('is too short');
             return expect(adapter.h).to.eql(['PUT:/posts/1']);
           });
         });
@@ -2271,7 +2278,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
             return session.flush().then(null, function() {
               expect(post.hasErrors).to.be["true"];
               expect(post.title).to.eq('');
-              expect(post.errors.get('title')).to.eq('is too short');
+              expect(post.errors.title).to.eq('is too short');
               return expect(adapter.h).to.eql(['PUT:/posts/1']);
             });
           });
@@ -2300,7 +2307,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
               expect(post.hasErrors).to.be["true"];
               expect(post.title).to.eq('');
               expect(post.category).to.eq('new');
-              expect(post.errors.get('title')).to.eq('is too short');
+              expect(post.errors.title).to.eq('is too short');
               return expect(adapter.h).to.eql(['PUT:/posts/1']);
             });
           });
@@ -2365,7 +2372,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
           };
           post = session.create('post', {title: 'errorz'});
           return session.flush().then(null, function() {
-            return expect(post.errors.get('title')).to.eq('is lamerz');
+            return expect(post.errors.title).to.eq('is lamerz');
           });
         });
         it('merges payload with latest client changes against latest client version', function() {
@@ -2396,7 +2403,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
           };
           post = session.create('post', {title: 'errorz'});
           return session.flush().then(null, function() {
-            expect(post.errors.get('title')).to.eq('is lamerz');
+            expect(post.errors.title).to.eq('is lamerz');
             adapter.r['POST:/posts'] = function(url, type, hash) {
               return {post: {
                   title: 'linkbait',
@@ -2428,7 +2435,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
           post = session.create('post', {title: 'errorz'});
           return session.flush().then(null, function() {
             expect(post.title).to.eq('Something');
-            expect(post.errors.get('title')).to.eq('is lamerz');
+            expect(post.errors.title).to.eq('is lamerz');
             adapter.r['POST:/posts'] = function(url, type, hash) {
               return {post: {
                   title: 'linkbait',
@@ -2476,7 +2483,7 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
             session = session.newSession();
             post = session.create('post', {title: 'errorz'});
             return session.flush().then(null, function() {
-              expect(post.errors.get('title')).to.eq('is lamerz');
+              expect(post.errors.title).to.eq('is lamerz');
               adapter.r['POST:/posts'] = function(url, type, hash) {
                 return {post: {
                     title: 'linkbait',
@@ -2975,7 +2982,10 @@ define("coalesce-test/rest/rest.one_to_many", ['./_shared', 'coalesce/model/mode
           expect(post.comments.toArray()).to.eql([comment, sibling]);
           return session.flush().then(function() {
             expect(post.comments.toArray()).to.eql([comment, sibling]);
-            return expect(adapter.h).to.eql(['PUT:/posts/1', 'PUT:/comments/2', 'POST:/comments']);
+            expect(adapter.h.length).to.eq(3);
+            expect(adapter.h).to.include('PUT:/posts/1');
+            expect(adapter.h).to.include('PUT:/comments/2');
+            return expect(adapter.h).to.include('POST:/comments');
           });
         });
       });
@@ -3062,7 +3072,9 @@ define("coalesce-test/rest/rest.one_to_many", ['./_shared', 'coalesce/model/mode
           return session.flush().then(function() {
             expect(post.comments.length).to.eq(0);
             expect(post.title).to.eq('childless');
-            return expect(adapter.h).to.eql(['DELETE:/comments/2', 'PUT:/posts/1']);
+            expect(adapter.h.length).to.eq(2);
+            expect(adapter.h).to.include('DELETE:/comments/2');
+            return expect(adapter.h).to.include('PUT:/posts/1');
           });
         });
       });
@@ -3088,7 +3100,9 @@ define("coalesce-test/rest/rest.one_to_many", ['./_shared', 'coalesce/model/mode
           expect(post.comments.length).to.eq(0);
           session.deleteModel(post);
           return session.flush().then(function() {
-            expect(adapter.h).to.eql(['DELETE:/comments/2', 'DELETE:/posts/1']);
+            expect(adapter.h.length).to.eq(2);
+            expect(adapter.h).to.include('DELETE:/comments/2');
+            expect(adapter.h).to.include('DELETE:/posts/1');
             expect(post.isDeleted).to.be["true"];
             return expect(comment.isDeleted).to.be["true"];
           });
@@ -3520,7 +3534,9 @@ define("coalesce-test/rest/rest.one_to_one", ['./_shared', 'coalesce/model/model
           session.deleteModel(user);
           session.deleteModel(post);
           return session.flush().then(function() {
-            return expect(adapter.h).to.eql(['DELETE:/users/2', 'DELETE:/posts/1']);
+            expect(adapter.h.length).to.eq(2);
+            expect(adapter.h).to.include('DELETE:/users/2');
+            return expect(adapter.h).to.include('DELETE:/posts/1');
           });
         });
       });
