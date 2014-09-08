@@ -1,6 +1,6 @@
 {
   "name": "coalesce",
-  "version": "0.4.0+dev.0ad0279f",
+  "version": "0.4.0+dev.58f92d39",
   "license": "MIT",
   "main": "coalesce.js",
   "keywords": [
