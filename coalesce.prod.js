@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.ae509981
+ * @version   0.4.0+dev.0ad0279f
  */
 (function() {
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jsondiffpatch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -6791,27 +6791,28 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
     defineField: function(field) {
       field.defineProperty(this.prototype);
       field.parentType = this;
-      this[("_" + field.name + "_def")] = field;
+      this.ownFields.set(field.name, field);
       return field;
+    },
+    get ownFields() {
+      if (!this.hasOwnProperty('_ownFields')) {
+        this._ownFields = new Map();
+      }
+      return this._ownFields;
     },
     get fields() {
       if (this._fields)
         return this._fields;
       var res = new Map(),
           parentClass = Object.getPrototypeOf(this);
+      var maps = [this.ownFields];
       if (parentClass.prototype instanceof $Model) {
-        var parentFields = parentClass.fields;
-        parentFields.forEach(function(field, name) {
+        maps.push(parentClass.fields);
+      }
+      for (var i = 0; i < maps.length; i++) {
+        maps[i].forEach(function(field, name) {
           res.set(name, field);
         });
-      }
-      for (var name in this) {
-        if (!this.hasOwnProperty(name))
-          continue;
-        var value = this[name];
-        if (!(value instanceof Field))
-          continue;
-        res.set(value.name, value);
       }
       return this._fields = res;
     },
@@ -6936,7 +6937,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.ae509981',
+    VERSION: '0.4.0+dev.0ad0279f',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
