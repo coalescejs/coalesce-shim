@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.58f92d39
+ * @version   0.4.0+dev.a33fd43a
  */
 define("coalesce-test/_setup", [], function() {
   "use strict";

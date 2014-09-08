@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.58f92d39
+ * @version   0.4.0+dev.a33fd43a
  */
 (function() {
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jsondiffpatch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -6774,7 +6774,7 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
     }
   }, {
     toString: function() {
-      if (this.__toString || this.name || (this.typeKey && classify(this.typeKey))) {
+      if (this.__toString = this.__toString || this.name || (this.typeKey && classify(this.typeKey))) {
         return this.__toString;
       }
       return "[No Type Key]";
@@ -6958,7 +6958,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.58f92d39',
+    VERSION: '0.4.0+dev.a33fd43a',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
