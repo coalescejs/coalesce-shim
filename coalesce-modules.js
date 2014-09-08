@@ -3,83 +3,85 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.ac8605c1
+ * @version   0.4.0+dev.ae509981
  */
-define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69) {
+define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71) {
   "use strict";
   var __moduleName = "coalesce";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   if (!$__10 || !$__10.__esModule)
-    $__10 = {'default': $__10};
+    $__10 = {default: $__10};
   if (!$__12 || !$__12.__esModule)
-    $__12 = {'default': $__12};
+    $__12 = {default: $__12};
   if (!$__14 || !$__14.__esModule)
-    $__14 = {'default': $__14};
+    $__14 = {default: $__14};
   if (!$__16 || !$__16.__esModule)
-    $__16 = {'default': $__16};
+    $__16 = {default: $__16};
   if (!$__18 || !$__18.__esModule)
-    $__18 = {'default': $__18};
+    $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
-    $__20 = {'default': $__20};
+    $__20 = {default: $__20};
   if (!$__22 || !$__22.__esModule)
-    $__22 = {'default': $__22};
+    $__22 = {default: $__22};
   if (!$__23 || !$__23.__esModule)
-    $__23 = {'default': $__23};
+    $__23 = {default: $__23};
   if (!$__25 || !$__25.__esModule)
-    $__25 = {'default': $__25};
+    $__25 = {default: $__25};
   if (!$__27 || !$__27.__esModule)
-    $__27 = {'default': $__27};
+    $__27 = {default: $__27};
   if (!$__29 || !$__29.__esModule)
-    $__29 = {'default': $__29};
+    $__29 = {default: $__29};
   if (!$__31 || !$__31.__esModule)
-    $__31 = {'default': $__31};
+    $__31 = {default: $__31};
   if (!$__33 || !$__33.__esModule)
-    $__33 = {'default': $__33};
+    $__33 = {default: $__33};
   if (!$__35 || !$__35.__esModule)
-    $__35 = {'default': $__35};
+    $__35 = {default: $__35};
   if (!$__37 || !$__37.__esModule)
-    $__37 = {'default': $__37};
+    $__37 = {default: $__37};
   if (!$__39 || !$__39.__esModule)
-    $__39 = {'default': $__39};
+    $__39 = {default: $__39};
   if (!$__41 || !$__41.__esModule)
-    $__41 = {'default': $__41};
+    $__41 = {default: $__41};
   if (!$__43 || !$__43.__esModule)
-    $__43 = {'default': $__43};
+    $__43 = {default: $__43};
   if (!$__45 || !$__45.__esModule)
-    $__45 = {'default': $__45};
+    $__45 = {default: $__45};
   if (!$__47 || !$__47.__esModule)
-    $__47 = {'default': $__47};
+    $__47 = {default: $__47};
   if (!$__49 || !$__49.__esModule)
-    $__49 = {'default': $__49};
+    $__49 = {default: $__49};
   if (!$__51 || !$__51.__esModule)
-    $__51 = {'default': $__51};
+    $__51 = {default: $__51};
   if (!$__53 || !$__53.__esModule)
-    $__53 = {'default': $__53};
+    $__53 = {default: $__53};
   if (!$__55 || !$__55.__esModule)
-    $__55 = {'default': $__55};
+    $__55 = {default: $__55};
   if (!$__57 || !$__57.__esModule)
-    $__57 = {'default': $__57};
+    $__57 = {default: $__57};
   if (!$__59 || !$__59.__esModule)
-    $__59 = {'default': $__59};
+    $__59 = {default: $__59};
   if (!$__61 || !$__61.__esModule)
-    $__61 = {'default': $__61};
+    $__61 = {default: $__61};
   if (!$__63 || !$__63.__esModule)
-    $__63 = {'default': $__63};
+    $__63 = {default: $__63};
   if (!$__65 || !$__65.__esModule)
-    $__65 = {'default': $__65};
+    $__65 = {default: $__65};
   if (!$__67 || !$__67.__esModule)
-    $__67 = {'default': $__67};
+    $__67 = {default: $__67};
   if (!$__69 || !$__69.__esModule)
-    $__69 = {'default': $__69};
+    $__69 = {default: $__69};
+  if (!$__71 || !$__71.__esModule)
+    $__71 = {default: $__71};
   var Coalesce = $__0.default;
   var setupContainer = $__2.setupContainer;
   var Container = $__4.default;
@@ -116,6 +118,9 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   var InverseManager = $__65.default;
   var Session = $__67.default;
   var isEqual = $__69.default;
+  var $__72 = $__71,
+      pluralize = $__72.pluralize,
+      singularize = $__72.singularize;
   Coalesce.Container = Container;
   Coalesce.setupContainer = setupContainer;
   Coalesce.Adapter = Adapter;
@@ -149,6 +154,8 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   Coalesce.CollectionManager = CollectionManager;
   Coalesce.InverseManager = InverseManager;
   Coalesce.Session = Session;
+  Coalesce.pluralize = pluralize;
+  Coalesce.singularize = singularize;
   Coalesce.isEqual = isEqual;
   var $__default = Coalesce;
   return {
@@ -163,11 +170,11 @@ define("coalesce/active_model/active_model_adapter", ['../rest/rest_adapter', '.
   "use strict";
   var __moduleName = "coalesce/active_model/active_model_adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var RestAdapter = $__0.default;
   var ActiveModelSerializer = $__2.default;
   var $__5 = $__4,
@@ -203,9 +210,9 @@ define("coalesce/active_model/serializers/model", ['../../serializers/model', '.
   "use strict";
   var __moduleName = "coalesce/active_model/serializers/model";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var ModelSerializer = $__0.default;
   var singularize = $__2.singularize;
   var ActiveModelSerializer = function ActiveModelSerializer() {
@@ -236,15 +243,15 @@ define("coalesce/adapter", ['./error', './utils/base_class', './factories/serial
   "use strict";
   var __moduleName = "coalesce/adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   var Error = $__0.default;
   var BaseClass = $__2.default;
   var SerializerFactory = $__4.default;
@@ -338,7 +345,7 @@ define("coalesce/collections/has_many_array", ['../collections/model_array'], fu
   "use strict";
   var __moduleName = "coalesce/collections/has_many_array";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var ModelArray = $__0.default;
   var HasManyArray = function HasManyArray() {
     $traceurRuntime.defaultSuperCall(this, $HasManyArray.prototype, arguments);
@@ -397,13 +404,13 @@ define("coalesce/collections/model_array", ['./observable_array', './model_set',
   "use strict";
   var __moduleName = "coalesce/collections/model_array";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var ObservableArray = $__0.default;
   var ModelSet = $__2.default;
   var isEqual = $__4.default;
@@ -505,15 +512,18 @@ define("coalesce/collections/model_array", ['./observable_array', './model_set',
   };
 });
 
-define("coalesce/collections/model_set", ['../utils/base_class'], function($__0) {
+define("coalesce/collections/model_set", ['../utils/array_from', '../utils/base_class'], function($__0,$__2) {
   "use strict";
   var __moduleName = "coalesce/collections/model_set";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
+  if (!$__2 || !$__2.__esModule)
+    $__2 = {default: $__2};
   function guidFor(model) {
     return model.clientId;
   }
-  var BaseClass = $__0.default;
+  var array_from = $__0.default;
+  var BaseClass = $__2.default;
   var ModelSet = function ModelSet(iterable) {
     this._size = 0;
     if (iterable) {
@@ -616,7 +626,7 @@ define("coalesce/collections/model_set", ['../utils/base_class'], function($__0)
         return;
       return this[idx];
     },
-    values: $traceurRuntime.initGeneratorFunction(function $__5() {
+    values: $traceurRuntime.initGeneratorFunction(function $__7() {
       var i;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
@@ -642,7 +652,7 @@ define("coalesce/collections/model_set", ['../utils/base_class'], function($__0)
             default:
               return $ctx.end();
           }
-      }, $__5, this);
+      }, $__7, this);
     }),
     addData: function(model) {
       var existing = this.getModel(model);
@@ -662,9 +672,9 @@ define("coalesce/collections/model_set", ['../utils/base_class'], function($__0)
           this.add(item);
         }, this);
       } else {
-        for (var $__3 = iterable[Symbol.iterator](),
-            $__4; !($__4 = $__3.next()).done; ) {
-          var item = $__4.value;
+        for (var $__5 = iterable[Symbol.iterator](),
+            $__6; !($__6 = $__5.next()).done; ) {
+          var item = $__6.value;
           {
             this.add(item);
           }
@@ -678,15 +688,18 @@ define("coalesce/collections/model_set", ['../utils/base_class'], function($__0)
           this.delete(item);
         }, this);
       } else {
-        for (var $__3 = iterable[Symbol.iterator](),
-            $__4; !($__4 = $__3.next()).done; ) {
-          var item = $__4.value;
+        for (var $__5 = iterable[Symbol.iterator](),
+            $__6; !($__6 = $__5.next()).done; ) {
+          var item = $__6.value;
           {
             this.delete(item);
           }
         }
       }
       return this;
+    },
+    toArray: function() {
+      return array_from(this);
     }
   }, {}, BaseClass);
   var $__default = ModelSet;
@@ -720,11 +733,11 @@ define("coalesce/collections/observable_array", ['../error', '../utils/copy', '.
   "use strict";
   var __moduleName = "coalesce/collections/observable_array";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var Error = $__0.default;
   var copy = $__2.default;
   var array_from = $__4.default;
@@ -937,35 +950,35 @@ define("coalesce/container", ['./container/container', './session/session', './i
   "use strict";
   var __moduleName = "coalesce/container";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   if (!$__10 || !$__10.__esModule)
-    $__10 = {'default': $__10};
+    $__10 = {default: $__10};
   if (!$__12 || !$__12.__esModule)
-    $__12 = {'default': $__12};
+    $__12 = {default: $__12};
   if (!$__14 || !$__14.__esModule)
-    $__14 = {'default': $__14};
+    $__14 = {default: $__14};
   if (!$__16 || !$__16.__esModule)
-    $__16 = {'default': $__16};
+    $__16 = {default: $__16};
   if (!$__18 || !$__18.__esModule)
-    $__18 = {'default': $__18};
+    $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
-    $__20 = {'default': $__20};
+    $__20 = {default: $__20};
   if (!$__22 || !$__22.__esModule)
-    $__22 = {'default': $__22};
+    $__22 = {default: $__22};
   if (!$__24 || !$__24.__esModule)
-    $__24 = {'default': $__24};
+    $__24 = {default: $__24};
   if (!$__26 || !$__26.__esModule)
-    $__26 = {'default': $__26};
+    $__26 = {default: $__26};
   if (!$__28 || !$__28.__esModule)
-    $__28 = {'default': $__28};
+    $__28 = {default: $__28};
   var Container = $__0.default;
   var Session = $__2.default;
   var IdManager = $__4.default;
@@ -1037,7 +1050,7 @@ define("coalesce/container/container", ['./inheriting_dict'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/container/container";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var InheritingDict = $__0.default;
   function Container(parent) {
     this.parent = parent;
@@ -1540,7 +1553,7 @@ define("coalesce/id_manager", ['./utils/base_class'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/id_manager";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var BaseClass = $__0.default;
   var uuid = 1;
   var IdManager = function IdManager() {
@@ -1597,7 +1610,7 @@ define("coalesce/merge/base", ['../utils/base_class'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/merge/base";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var BaseClass = $__0.default;
   var Base = function Base() {
     $traceurRuntime.defaultSuperCall(this, $Base.prototype, arguments);
@@ -1617,13 +1630,13 @@ define("coalesce/merge/per_field", ['./base', '../collections/model_set', '../ut
   "use strict";
   var __moduleName = "coalesce/merge/per_field";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var Base = $__0.default;
   var ModelSet = $__2.default;
   var isEqual = $__4.default;
@@ -1690,9 +1703,9 @@ define("coalesce/model/attribute", ['./field', '../utils/is_equal'], function($_
   "use strict";
   var __moduleName = "coalesce/model/attribute";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Field = $__0.default;
   var isEqual = $__2.default;
   var Attribute = function Attribute() {
@@ -1735,9 +1748,9 @@ define("coalesce/model/belongs_to", ['./field', '../utils/is_equal'], function($
   "use strict";
   var __moduleName = "coalesce/model/belongs_to";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Field = $__0.default;
   var isEqual = $__2.default;
   var BelongsTo = function BelongsTo() {
@@ -1787,9 +1800,9 @@ define("coalesce/model/diff", ['./model', '../collections/model_set'], function(
   "use strict";
   var __moduleName = "coalesce/model/diff";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Model = $__0.default;
   var ModelSet = $__2.default;
   Model.reopen({diff: function(model) {
@@ -1881,7 +1894,7 @@ define("coalesce/model/errors", ['../utils/base_class'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/model/errors";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var BaseClass = $__0.default;
   var Errors = function Errors() {
     var obj = arguments[0] !== (void 0) ? arguments[0] : {};
@@ -1939,13 +1952,13 @@ define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal
   "use strict";
   var __moduleName = "coalesce/model/has_many";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var Coalesce = $__0.default;
   var Field = $__2.default;
   var isEqual = $__4.default;
@@ -2007,31 +2020,33 @@ define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal
   };
 });
 
-define("coalesce/model/model", ['../namespace', '../utils/base_class', '../collections/model_set', '../utils/copy', '../utils/lazy_copy', '../utils/is_equal', './attribute', './belongs_to', './has_many', '../error', '../utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20) {
+define("coalesce/model/model", ['../namespace', '../utils/base_class', '../collections/model_set', '../utils/copy', '../utils/lazy_copy', '../utils/is_equal', './attribute', './belongs_to', './has_many', '../error', './field', '../utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22) {
   "use strict";
   var __moduleName = "coalesce/model/model";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   if (!$__10 || !$__10.__esModule)
-    $__10 = {'default': $__10};
+    $__10 = {default: $__10};
   if (!$__12 || !$__12.__esModule)
-    $__12 = {'default': $__12};
+    $__12 = {default: $__12};
   if (!$__14 || !$__14.__esModule)
-    $__14 = {'default': $__14};
+    $__14 = {default: $__14};
   if (!$__16 || !$__16.__esModule)
-    $__16 = {'default': $__16};
+    $__16 = {default: $__16};
   if (!$__18 || !$__18.__esModule)
-    $__18 = {'default': $__18};
+    $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
-    $__20 = {'default': $__20};
+    $__20 = {default: $__20};
+  if (!$__22 || !$__22.__esModule)
+    $__22 = {default: $__22};
   var Coalesce = $__0.default;
   var BaseClass = $__2.default;
   var ModelSet = $__4.default;
@@ -2042,11 +2057,12 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
   var BelongsTo = $__14.default;
   var HasMany = $__16.default;
   var Error = $__18.default;
-  var $__21 = $__20,
-      camelize = $__21.camelize,
-      pluralize = $__21.pluralize,
-      underscore = $__21.underscore,
-      classify = $__21.classify;
+  var Field = $__20.default;
+  var $__23 = $__22,
+      camelize = $__23.camelize,
+      pluralize = $__23.pluralize,
+      underscore = $__23.underscore,
+      classify = $__23.classify;
   var Model = function Model(fields) {
     this._meta = {
       _id: null,
@@ -2066,6 +2082,7 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       this[name] = fields[name];
     }
   };
+  var $Model = Model;
   ($traceurRuntime.createClass)(Model, {
     get id() {
       return this._meta['_id'];
@@ -2342,8 +2359,7 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
         if (!attributes.hasOwnProperty(name))
           continue;
         var field = new Attribute(name, attributes[name]);
-        field.defineProperty(this.prototype);
-        this.addFieldDefinition(field);
+        this.defineField(field);
       }
       var relationships = schema.relationships || {};
       for (var name in relationships) {
@@ -2359,22 +2375,35 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
         } else {
           console.assert(false, "Unkown relationship kind '" + options.kind + "'. Supported kinds are 'belongsTo' and 'hasMany'");
         }
-        field.defineProperty(this.prototype);
-        field.parentType = this;
-        this.addFieldDefinition(field);
+        this.defineField(field);
       }
     },
-    addFieldDefinition: function(field) {
-      var fields = new Map();
-      this.fields.forEach(function(field, name) {
-        fields.set(name, field);
-      });
-      fields.set(field.name, field);
-      this._fields = fields;
+    defineField: function(field) {
+      field.defineProperty(this.prototype);
+      field.parentType = this;
+      this[("_" + field.name + "_def")] = field;
       return field;
     },
     get fields() {
-      return this._fields || (this._fields = new Map());
+      if (this._fields)
+        return this._fields;
+      var res = new Map(),
+          parentClass = Object.getPrototypeOf(this);
+      if (parentClass.prototype instanceof $Model) {
+        var parentFields = parentClass.fields;
+        parentFields.forEach(function(field, name) {
+          res.set(name, field);
+        });
+      }
+      for (var name in this) {
+        if (!this.hasOwnProperty(name))
+          continue;
+        var value = this[name];
+        if (!(value instanceof Field))
+          continue;
+        res.set(value.name, value);
+      }
+      return this._fields = res;
     },
     get attributes() {
       if (this._attributes)
@@ -2499,7 +2528,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.ac8605c1',
+    VERSION: '0.4.0+dev.ae509981',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -2517,7 +2546,7 @@ define("coalesce/rest/embedded_manager", ['../utils/base_class'], function($__0)
   "use strict";
   var __moduleName = "coalesce/rest/embedded_manager";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var BaseClass = $__0.default;
   var EmbeddedManager = function EmbeddedManager(adapter) {
     this.adapter = adapter;
@@ -2633,7 +2662,7 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/rest/operation";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Coalesce = $__0.default;
   var Operation = function Operation(model, graph, adapter, session) {
     this.model = model;
@@ -2691,6 +2720,8 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
       var model = this.model,
           shadow = this.shadow,
           adapter = this.adapter;
+      if (!shadow)
+        return false;
       var diff = model.diff(shadow);
       var dirty = false;
       var relDiff = [];
@@ -2804,11 +2835,11 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace', '../util
   "use strict";
   var __moduleName = "coalesce/rest/operation_graph";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var Operation = $__0.default;
   var Coalesce = $__2.default;
   var array_from = $__4.default;
@@ -2927,9 +2958,9 @@ define("coalesce/rest/payload", ['../collections/model_set', '../utils/array_fro
   "use strict";
   var __moduleName = "coalesce/rest/payload";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var isArray = Array.isArray;
   var ModelSet = $__0.default;
   var array_from = $__2.default;
@@ -2971,27 +3002,27 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
   "use strict";
   var __moduleName = "coalesce/rest/rest_adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   if (!$__10 || !$__10.__esModule)
-    $__10 = {'default': $__10};
+    $__10 = {default: $__10};
   if (!$__12 || !$__12.__esModule)
-    $__12 = {'default': $__12};
+    $__12 = {default: $__12};
   if (!$__14 || !$__14.__esModule)
-    $__14 = {'default': $__14};
+    $__14 = {default: $__14};
   if (!$__16 || !$__16.__esModule)
-    $__16 = {'default': $__16};
+    $__16 = {default: $__16};
   if (!$__18 || !$__18.__esModule)
-    $__18 = {'default': $__18};
+    $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
-    $__20 = {'default': $__20};
+    $__20 = {default: $__20};
   var Coalesce = $__0.default;
   var Adapter = $__2.default;
   var EmbeddedManager = $__4.default;
@@ -3437,9 +3468,11 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
       var headers = this.headers;
       if (headers !== undefined) {
         hash.beforeSend = function(xhr) {
-          forEach.call(Object.keys(headers), function(key) {
+          for (var key in headers) {
+            if (!headers.hasOwnProperty(key))
+              continue;
             xhr.setRequestHeader(key, headers[key]);
-          });
+          }
         };
       }
       return hash;
@@ -3459,13 +3492,13 @@ define("coalesce/rest/serializers/errors", ['../../serializers/base', '../../err
   "use strict";
   var __moduleName = "coalesce/rest/serializers/errors";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var Serializer = $__0.default;
   var Error = $__2.default;
   var camelize = $__4.camelize;
@@ -3513,13 +3546,13 @@ define("coalesce/rest/serializers/payload", ['../../utils/materialize_relationsh
   "use strict";
   var __moduleName = "coalesce/rest/serializers/payload";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var materializeRelationships = $__0.default;
   var Serializer = $__2.default;
   var Payload = $__4.default;
@@ -3627,9 +3660,9 @@ define("coalesce/serializers/base", ['../factories/serializer', '../utils/base_c
   "use strict";
   var __moduleName = "coalesce/serializers/base";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var SerializerFactory = $__0.default;
   var BaseClass = $__2.default;
   var Base = function Base() {
@@ -3655,7 +3688,7 @@ define("coalesce/serializers/belongs_to", ['./base'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/serializers/belongs_to";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Serializer = $__0.default;
   var BelongsToSerializer = function BelongsToSerializer() {
     $traceurRuntime.defaultSuperCall(this, $BelongsToSerializer.prototype, arguments);
@@ -3705,7 +3738,7 @@ define("coalesce/serializers/boolean", ['./base'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/serializers/boolean";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Serializer = $__0.default;
   var BooleanSerializer = function BooleanSerializer() {
     $traceurRuntime.defaultSuperCall(this, $BooleanSerializer.prototype, arguments);
@@ -3741,9 +3774,9 @@ define("coalesce/serializers/date", ['./base', '../utils/parse_date'], function(
   "use strict";
   var __moduleName = "coalesce/serializers/date";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Serializer = $__0.default;
   var parseDate = $__2.default;
   var DateSerializer = function DateSerializer() {
@@ -3799,9 +3832,9 @@ define("coalesce/serializers/has_many", ['../utils/is_empty', './base'], functio
   "use strict";
   var __moduleName = "coalesce/serializers/has_many";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var isEmpty = $__0.default;
   var Serializer = $__2.default;
   var HasManySerializer = function HasManySerializer() {
@@ -3853,7 +3886,7 @@ define("coalesce/serializers/id", ['./base'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/serializers/id";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Serializer = $__0.default;
   var IdSerializer = function IdSerializer() {
     $traceurRuntime.defaultSuperCall(this, $IdSerializer.prototype, arguments);
@@ -3885,9 +3918,9 @@ define("coalesce/serializers/model", ['./base', '../utils/inflector'], function(
   "use strict";
   var __moduleName = "coalesce/serializers/model";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Serializer = $__0.default;
   var $__3 = $__2,
       singularize = $__3.singularize,
@@ -4063,9 +4096,9 @@ define("coalesce/serializers/number", ['../utils/is_empty', './base'], function(
   "use strict";
   var __moduleName = "coalesce/serializers/number";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var isEmpty = $__0.default;
   var Serializer = $__2.default;
   var NumberSerializer = function NumberSerializer() {
@@ -4093,9 +4126,9 @@ define("coalesce/serializers/revision", ['../utils/is_empty', './base'], functio
   "use strict";
   var __moduleName = "coalesce/serializers/revision";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var isEmpty = $__0.default;
   var Serializer = $__2.default;
   var RevisionSerializer = function RevisionSerializer() {
@@ -4123,9 +4156,9 @@ define("coalesce/serializers/string", ['../utils/is_none', './base'], function($
   "use strict";
   var __moduleName = "coalesce/serializers/string";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var isNone = $__0.default;
   var Serializer = $__2.default;
   var StringSerializer = function StringSerializer() {
@@ -4153,7 +4186,7 @@ define("coalesce/session/cache", ['../namespace'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/session/cache";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Coalesce = $__0.default;
   var Cache = function Cache() {
     this._data = {};
@@ -4234,9 +4267,9 @@ define("coalesce/session/inverse_manager", ['../collections/model_set', '../util
   "use strict";
   var __moduleName = "coalesce/session/inverse_manager";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var ModelSet = $__0.default;
   var copy = $__2.default;
   var InverseManager = function InverseManager(session) {
@@ -4354,27 +4387,27 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
   "use strict";
   var __moduleName = "coalesce/session/session";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   if (!$__10 || !$__10.__esModule)
-    $__10 = {'default': $__10};
+    $__10 = {default: $__10};
   if (!$__12 || !$__12.__esModule)
-    $__12 = {'default': $__12};
+    $__12 = {default: $__12};
   if (!$__14 || !$__14.__esModule)
-    $__14 = {'default': $__14};
+    $__14 = {default: $__14};
   if (!$__16 || !$__16.__esModule)
-    $__16 = {'default': $__16};
+    $__16 = {default: $__16};
   if (!$__18 || !$__18.__esModule)
-    $__18 = {'default': $__18};
+    $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
-    $__20 = {'default': $__20};
+    $__20 = {default: $__20};
   var ModelArray = $__0.default;
   var ModelSet = $__2.default;
   var CollectionManager = $__4.default;
@@ -4388,7 +4421,7 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
   var array_from = $__20.default;
   var uuid = 1;
   var Session = function Session($__23) {
-    var $__24 = $traceurRuntime.assertObject($__23),
+    var $__24 = $__23,
         adapter = $__24.adapter,
         idManager = $__24.idManager,
         container = $__24.container,
@@ -5221,7 +5254,7 @@ define("coalesce/utils/is_empty", ['./is_none'], function($__0) {
   "use strict";
   var __moduleName = "coalesce/utils/is_empty";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var isNone = $__0.default;
   function isEmpty(obj) {
     return isNone(obj) || (obj.length === 0 && typeof obj !== 'function') || (typeof obj === 'object' && obj.size === 0);
@@ -5326,7 +5359,7 @@ define("coalesce/utils/materialize_relationships", ['../collections/model_set'],
   "use strict";
   var __moduleName = "coalesce/utils/materialize_relationships";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var ModelSet = $__0.default;
   function materializeRelationships(models, idManager) {
     if (!(models instanceof ModelSet)) {

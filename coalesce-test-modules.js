@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.ac8605c1
+ * @version   0.4.0+dev.ae509981
  */
 define("coalesce-test/_setup", [], function() {
   "use strict";
@@ -15,9 +15,9 @@ define("coalesce-test/active_model/_shared", ['coalesce/container', 'coalesce/ac
   "use strict";
   var __moduleName = "coalesce-test/active_model/_shared";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Container = $__0.default;
   var ActiveModelAdapter = $__2.default;
   var setup;
@@ -79,9 +79,9 @@ define("coalesce-test/active_model/active_model_adapter", ['./_shared', 'coalesc
   "use strict";
   var __moduleName = "coalesce-test/active_model/active_model_adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var Model = $__2.default;
   describe("ActiveModelAdapter", function() {
@@ -123,9 +123,9 @@ define("coalesce-test/adapter", ['coalesce/model/model', 'coalesce/container'], 
   "use strict";
   var __moduleName = "coalesce-test/adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Model = $__0.default;
   var Container = $__2.default;
   describe('Adapter', function() {
@@ -179,11 +179,11 @@ define("coalesce-test/collections/model_array", ['coalesce/collections/model_arr
   "use strict";
   var __moduleName = "coalesce-test/collections/model_array";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var ModelArray = $__0.default;
   var Model = $__2.default;
   var attr = $__4.default;
@@ -256,9 +256,9 @@ define("coalesce-test/collections/model_set", ['coalesce/model/model', 'coalesce
   "use strict";
   var __moduleName = "coalesce-test/collections/model_set";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Model = $__0.default;
   var ModelSet = $__2.default;
   describe('ModelSet', function() {
@@ -402,11 +402,11 @@ define("coalesce-test/merge_strategies/per_field", ['coalesce/merge/per_field', 
   "use strict";
   var __moduleName = "coalesce-test/merge_strategies/per_field";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var PerField = $__0.default;
   var Model = $__2.default;
   var Container = $__4.default;
@@ -686,7 +686,7 @@ define("coalesce-test/model/errors", ['coalesce/model/errors'], function($__0) {
   "use strict";
   var __moduleName = "coalesce-test/model/errors";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var Errors = $__0.default;
   describe('Errors', function() {
     return describe('forEach', function() {
@@ -721,11 +721,11 @@ define("coalesce-test/model/model", ['coalesce/collections/model_set', 'coalesce
   "use strict";
   var __moduleName = "coalesce-test/model/model";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var ModelSet = $__0.default;
   var Model = $__2.default;
   var Container = $__4.default;
@@ -912,11 +912,11 @@ define("coalesce-test/model/relationships", ['../support/schemas', 'coalesce/mod
   "use strict";
   var __moduleName = "coalesce-test/model/relationships";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var $__1 = $__0,
       userWithPost = $__1.userWithPost,
       groupWithMembersWithUsers = $__1.groupWithMembersWithUsers;
@@ -1145,9 +1145,9 @@ define("coalesce-test/rest/_shared", ['./_test_adapter', 'coalesce/container'], 
   "use strict";
   var __moduleName = "coalesce-test/rest/_shared";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var TestRestAdapter = $__0.default;
   var Container = $__2.default;
   var setup;
@@ -1174,9 +1174,9 @@ define("coalesce-test/rest/_test_adapter", ['coalesce/rest/rest_adapter', 'coale
   "use strict";
   var __moduleName = "coalesce-test/rest/_test_adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var RestAdapter = $__0.default;
   var Coalesce = $__2.default;
   var TestRestAdapter = function TestRestAdapter() {
@@ -1227,9 +1227,9 @@ define("coalesce-test/rest/embedded_manager", ['./_shared', '../support/schemas'
   "use strict";
   var __moduleName = "coalesce-test/rest/embedded_manager";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var postWithEmbeddedComments = $__2.postWithEmbeddedComments;
   describe('EmbeddedManager', function() {
@@ -1260,15 +1260,15 @@ define("coalesce-test/rest/rest.acceptance", ['./_shared', '../support/schemas',
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.acceptance";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   if (!$__8 || !$__8.__esModule)
-    $__8 = {'default': $__8};
+    $__8 = {default: $__8};
   var setup = $__0.default;
   var $__3 = $__2,
       postWithComments = $__3.postWithComments,
@@ -1957,9 +1957,9 @@ define("coalesce-test/rest/rest.concurrent", ['./_shared', 'coalesce'], function
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.concurrent";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var Coalesce = $__2.default;
   describe("rest", function() {
@@ -2171,11 +2171,11 @@ define("coalesce-test/rest/rest.errors", ['./_shared', 'coalesce/model/model', '
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.errors";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   var setup = $__0.default;
   var Model = $__2.default;
   var Errors = $__4.default;
@@ -2556,7 +2556,7 @@ define("coalesce-test/rest/rest.meta", ['./_shared'], function($__0) {
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.meta";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var setup = $__0.default;
   describe("rest", function() {
     var adapter,
@@ -2749,13 +2749,13 @@ define("coalesce-test/rest/rest.one_to_many", ['./_shared', 'coalesce/model/mode
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.one_to_many";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var setup = $__0.default;
   var Model = $__2.default;
   var ModelSerializer = $__4.default;
@@ -3417,13 +3417,13 @@ define("coalesce-test/rest/rest.one_to_one", ['./_shared', 'coalesce/model/model
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.one_to_one";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var setup = $__0.default;
   var Model = $__2.default;
   var ModelSerializer = $__4.default;
@@ -3675,9 +3675,9 @@ define("coalesce-test/rest/rest.performance", ['./_shared', '../support/schemas'
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.performance";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var postWithComments = $__2.postWithComments;
   describe("rest", function() {
@@ -3785,9 +3785,9 @@ define("coalesce-test/rest/rest.rpc", ['./_shared', 'coalesce/model/model'], fun
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.rpc";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var Model = $__2.default;
   describe("rest", function() {
@@ -4081,13 +4081,13 @@ define("coalesce-test/rest/rest.serialization", ['./_shared', 'coalesce/model/mo
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.serialization";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var setup = $__0.default;
   var Model = $__2.default;
   var ModelSerializer = $__4.default;
@@ -4485,9 +4485,9 @@ define("coalesce-test/rest/rest.sideloading", ['./_shared', '../support/schemas'
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.sideloading";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var postWithComments = $__2.postWithComments;
   describe("rest", function() {
@@ -4536,7 +4536,7 @@ define("coalesce-test/rest/rest.simple", ['./_shared'], function($__0) {
   "use strict";
   var __moduleName = "coalesce-test/rest/rest.simple";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   var setup = $__0.default;
   describe("rest", function() {
     var adapter,
@@ -4809,9 +4809,9 @@ define("coalesce-test/rest/rest_adapter", ['./_shared', '../support/schemas'], f
   "use strict";
   var __moduleName = "coalesce-test/rest/rest_adapter";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var setup = $__0.default;
   var postWithComments = $__2.postWithComments;
   describe("RestAdapter", function() {
@@ -4830,7 +4830,7 @@ define("coalesce-test/rest/rest_adapter", ['./_shared', '../support/schemas'], f
     afterEach(function() {
       return delete Coalesce.__container__;
     });
-    return describe('.mergePayload', function() {
+    describe('.mergePayload', function() {
       var data;
       data = {
         post: {
@@ -4858,6 +4858,22 @@ define("coalesce-test/rest/rest_adapter", ['./_shared', '../support/schemas'], f
         return expect(models.size).to.eq(3);
       });
     });
+    return describe('.ajaxOptions', function() {
+      beforeEach(function() {
+        return adapter.headers = {'X-HEY': 'ohai'};
+      });
+      return it('picks up headers from .headers', function() {
+        var hash,
+            xhr;
+        hash = adapter.ajaxOptions('/api/test', 'GET', {});
+        expect(hash.beforeSend).to.not.be["null"];
+        xhr = {setRequestHeader: function(key, value) {
+            return this[key] = value;
+          }};
+        hash.beforeSend(xhr);
+        return expect(xhr['X-HEY']).to.eq('ohai');
+      });
+    });
   });
   return {};
 });
@@ -4866,9 +4882,9 @@ define("coalesce-test/serializers/model", ['coalesce/model/model', 'coalesce/con
   "use strict";
   var __moduleName = "coalesce-test/serializers/model";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Model = $__0.default;
   var Container = $__2.default;
   describe('ModelSerializer', function() {
@@ -4938,9 +4954,9 @@ define("coalesce-test/session/session.hierarchy", ['../support/schemas', 'coales
   "use strict";
   var __moduleName = "coalesce-test/session/session.hierarchy";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var postWithComments = $__0.postWithComments;
   var Container = $__2.default;
   describe("Session", function() {
@@ -5087,13 +5103,13 @@ define("coalesce-test/session/session", ['coalesce/model/model', 'coalesce/seria
   "use strict";
   var __moduleName = "coalesce-test/session/session";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   if (!$__4 || !$__4.__esModule)
-    $__4 = {'default': $__4};
+    $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
-    $__6 = {'default': $__6};
+    $__6 = {default: $__6};
   var Model = $__0.default;
   var ModelSerializer = $__2.default;
   var postWithComments = $__4.postWithComments;
@@ -5451,9 +5467,9 @@ define("coalesce-test/support/schemas", ['coalesce/model/model', 'coalesce/seria
   "use strict";
   var __moduleName = "coalesce-test/support/schemas";
   if (!$__0 || !$__0.__esModule)
-    $__0 = {'default': $__0};
+    $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
-    $__2 = {'default': $__2};
+    $__2 = {default: $__2};
   var Model = $__0.default;
   var ModelSerializer = $__2.default;
   function postWithComments() {
