@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.8f6cd675
+ * @version   0.4.0+dev.183ae1df
  */
 define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71) {
   "use strict";
@@ -1744,14 +1744,14 @@ define("coalesce/model/attribute", ['./field', '../utils/is_equal'], function($_
   };
 });
 
-define("coalesce/model/belongs_to", ['./field', '../utils/is_equal'], function($__0,$__2) {
+define("coalesce/model/belongs_to", ['./relationship', '../utils/is_equal'], function($__0,$__2) {
   "use strict";
   var __moduleName = "coalesce/model/belongs_to";
   if (!$__0 || !$__0.__esModule)
     $__0 = {default: $__0};
   if (!$__2 || !$__2.__esModule)
     $__2 = {default: $__2};
-  var Field = $__0.default;
+  var Relationship = $__0.default;
   var isEqual = $__2.default;
   var BelongsTo = function BelongsTo() {
     $traceurRuntime.defaultSuperCall(this, $BelongsTo.prototype, arguments);
@@ -1786,7 +1786,7 @@ define("coalesce/model/belongs_to", ['./field', '../utils/is_equal'], function($
           return value;
         }
       });
-    }}, {}, Field);
+    }}, {}, Relationship);
   var $__default = BelongsTo;
   return {
     get default() {
@@ -1948,7 +1948,7 @@ define("coalesce/model/field", [], function() {
   };
 });
 
-define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal', '../utils/copy'], function($__0,$__2,$__4,$__6) {
+define("coalesce/model/has_many", ['../namespace', './relationship', '../collections/has_many_array', '../utils/is_equal', '../utils/copy'], function($__0,$__2,$__4,$__6,$__8) {
   "use strict";
   var __moduleName = "coalesce/model/has_many";
   if (!$__0 || !$__0.__esModule)
@@ -1959,10 +1959,13 @@ define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal
     $__4 = {default: $__4};
   if (!$__6 || !$__6.__esModule)
     $__6 = {default: $__6};
+  if (!$__8 || !$__8.__esModule)
+    $__8 = {default: $__8};
   var Coalesce = $__0.default;
-  var Field = $__2.default;
-  var isEqual = $__4.default;
-  var copy = $__6.default;
+  var Relationship = $__2.default;
+  var HasManyArray = $__4.default;
+  var isEqual = $__6.default;
+  var copy = $__8.default;
   var HasMany = function HasMany() {
     $traceurRuntime.defaultSuperCall(this, $HasMany.prototype, arguments);
   };
@@ -2010,7 +2013,7 @@ define("coalesce/model/has_many", ['../namespace', './field', '../utils/is_equal
           return value;
         }
       });
-    }}, {}, Field);
+    }}, {}, Relationship);
   var $__default = HasMany;
   return {
     get default() {
@@ -2476,10 +2479,6 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
   }, BaseClass);
   var $__default = Model;
   function reifyRelationshipType(relationship) {
-    if (typeof relationship.type === 'string') {
-      relationship.typeKey = relationship.type;
-      delete relationship.type;
-    }
     if (!relationship.type) {
       relationship.type = Coalesce.__container__.lookupFactory('model:' + relationship.typeKey);
     }
@@ -2527,6 +2526,34 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
   };
 });
 
+define("coalesce/model/relationship", ['./field'], function($__0) {
+  "use strict";
+  var __moduleName = "coalesce/model/relationship";
+  if (!$__0 || !$__0.__esModule)
+    $__0 = {default: $__0};
+  var Field = $__0.default;
+  var Relationship = function Relationship(name, options) {
+    console.assert(options.type || options.typeKey, "Must specify a `type` or `typeKey` option");
+    if (typeof options.type === "string") {
+      var typeKey = options.type;
+      delete options.type;
+      options.typeKey = typeKey;
+    } else if (!options.typeKey) {
+      options.typeKey = options.type.typeKey;
+    }
+    $traceurRuntime.superCall(this, $Relationship.prototype, "constructor", [name, options]);
+  };
+  var $Relationship = Relationship;
+  ($traceurRuntime.createClass)(Relationship, {}, {}, Field);
+  var $__default = Relationship;
+  return {
+    get default() {
+      return $__default;
+    },
+    __esModule: true
+  };
+});
+
 define("coalesce/namespace", [], function() {
   "use strict";
   var __moduleName = "coalesce/namespace";
@@ -2538,7 +2565,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.8f6cd675',
+    VERSION: '0.4.0+dev.183ae1df',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -2620,11 +2647,10 @@ define("coalesce/rest/embedded_manager", ['../utils/base_class'], function($__0)
         if (!model.isFieldLoaded(name)) {
           return;
         }
-        var array = model[name];
-        for (var i = 0,
-            l = array.length; i < l; i++) {
-          callback.call(binding, array.objectAt(i), embeddedType);
-        }
+        var collection = model[name];
+        collection.forEach(function(model) {
+          callback.call(binding, model, embeddedType);
+        });
       });
     },
     eachEmbeddedHasMany: function(type, callback, binding) {
