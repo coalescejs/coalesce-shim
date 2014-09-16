@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.56092546
+ * @version   0.4.0+dev.ac5b1b6c
  */
 define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71) {
   "use strict";
@@ -1966,19 +1966,22 @@ define("coalesce/model/has_many", ['../namespace', './relationship', '../collect
   var HasManyArray = $__4.default;
   var isEqual = $__6.default;
   var copy = $__8.default;
-  var HasMany = function HasMany() {
-    $traceurRuntime.defaultSuperCall(this, $HasMany.prototype, arguments);
+  var defaults = _.defaults;
+  var HasMany = function HasMany(name, options) {
+    defaults(options, {collectionType: HasManyArray});
+    $traceurRuntime.superCall(this, $HasMany.prototype, "constructor", [name, options]);
   };
   var $HasMany = HasMany;
   ($traceurRuntime.createClass)(HasMany, {defineProperty: function(prototype) {
       var name = this.name;
+      var field = this;
       Object.defineProperty(prototype, name, {
         enumerable: true,
         get: function() {
           var value = this._relationships[name];
           if (this.isNew && !value) {
             var content = value;
-            value = this._relationships[name] = new Coalesce.HasManyArray();
+            value = this._relationships[name] = new field.collectionType();
             value.owner = this;
             value.name = name;
             if (content) {
@@ -1991,10 +1994,10 @@ define("coalesce/model/has_many", ['../namespace', './relationship', '../collect
           var oldValue = this._relationships[name];
           if (oldValue === value)
             return;
-          if (value && value instanceof Coalesce.HasManyArray) {
+          if (value && value instanceof field.collectionType) {
             value = copy(value);
           }
-          if (oldValue && oldValue instanceof Coalesce.HasManyArray) {
+          if (oldValue && oldValue instanceof field.collectionType) {
             oldValue.clear();
             if (value) {
               oldValue.addObjects(value);
@@ -2002,7 +2005,7 @@ define("coalesce/model/has_many", ['../namespace', './relationship', '../collect
           } else {
             this.hasManyWillChange(name);
             var content = value;
-            value = this._relationships[name] = new Coalesce.HasManyArray();
+            value = this._relationships[name] = new field.collectionType();
             value.owner = this;
             value.name = name;
             if (content) {
@@ -2565,7 +2568,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.56092546',
+    VERSION: '0.4.0+dev.ac5b1b6c',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
