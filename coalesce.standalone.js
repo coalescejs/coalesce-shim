@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.ac5b1b6c
+ * @version   0.4.0+dev.f91be6b7
  */
 (function() {
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jsondiffpatch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -6520,7 +6520,13 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return this._meta['_id'];
     },
     set id(value) {
-      return this._meta['_id'] = value;
+      var oldValue = this._meta['_id'];
+      if (oldValue === value)
+        return;
+      this.metaWillChange('id');
+      this._meta['_id'] = value;
+      this.metaDidChange('id');
+      return value;
     },
     get clientId() {
       return this._meta['_clientId'];
@@ -6682,6 +6688,8 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       }, this);
       return res;
     },
+    metaWillChange: function(name) {},
+    metaDidChange: function(name) {},
     attributeWillChange: function(name) {
       var session = this.session;
       if (session) {
@@ -6994,7 +7002,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.ac5b1b6c',
+    VERSION: '0.4.0+dev.f91be6b7',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])

@@ -1,11 +1,12 @@
 {
   "name": "coalesce",
-  "version": "0.4.0+dev.ac5b1b6c",
+  "version": "0.4.0+dev.f91be6b7",
   "license": "MIT",
   "main": "coalesce.js",
   "ignore": [
     "docs",
-    "test"
+    "test",
+    "testem.js"
   ],
   "keywords": [
     "coalesce",
