@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.24973cd3
+ * @version   0.4.0+dev.1cd55114
  */
 (function() {
 var define, requireModule, require, requirejs;
@@ -5233,12 +5233,12 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       classify = $__23.classify;
   var Model = function Model(fields) {
     this._meta = {
-      _id: null,
-      _clientId: null,
-      _rev: null,
-      _clientRev: 0,
-      _deleted: false,
-      _errors: null
+      id: null,
+      clientId: null,
+      rev: null,
+      clientRev: 0,
+      isDeleted: false,
+      errors: null
     };
     this._attributes = {};
     this._relationships = {};
@@ -5253,40 +5253,40 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
   var $Model = Model;
   ($traceurRuntime.createClass)(Model, {
     get id() {
-      return this._meta['_id'];
+      return getMeta.call(this, 'id');
     },
     set id(value) {
-      return setMeta.call(this, '_id', value);
+      return setMeta.call(this, 'id', value);
     },
     get clientId() {
-      return this._meta['_clientId'];
+      return getMeta.call(this, 'clientId');
     },
     set clientId(value) {
-      return this._meta['_clientId'] = value;
+      return setMeta.call(this, 'clientId', value);
     },
     get rev() {
-      return this._meta['_rev'];
+      return getMeta.call(this, 'rev');
     },
     set rev(value) {
-      return this._meta['_rev'] = value;
+      return setMeta.call(this, 'rev', value);
     },
     get clientRev() {
-      return this._meta['_clientRev'];
+      return getMeta.call(this, 'clientRev');
     },
     set clientRev(value) {
-      return this._meta['_clientRev'] = value;
+      return setMeta.call(this, 'clientRev', value);
     },
     get isDeleted() {
-      return this._meta['_deleted'];
+      return getMeta.call(this, 'isDeleted');
     },
     set isDeleted(value) {
-      return this._meta['_deleted'] = value;
+      return setMeta.call(this, 'isDeleted', value);
     },
     get errors() {
-      return this._meta['_errors'];
+      return getMeta.call(this, 'errors');
     },
     set errors(value) {
-      return setMeta.call(this, '_errors', value);
+      return setMeta.call(this, 'errors', value);
     },
     get isModel() {
       return true;
@@ -5663,10 +5663,13 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return session[name].apply(session, args);
     };
   }
+  function getMeta(name) {
+    return this._meta[name];
+  }
   function setMeta(name, value) {
     var oldValue = this._meta[name];
     if (oldValue === value)
-      return;
+      return oldValue;
     this.metaWillChange(name);
     this._meta[name] = value;
     this.metaDidChange(name);
@@ -5735,7 +5738,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.24973cd3',
+    VERSION: '0.4.0+dev.1cd55114',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
