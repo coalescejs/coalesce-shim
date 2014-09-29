@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.1cd55114
+ * @version   0.4.0+dev.2eba6378
  */
 define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71) {
   "use strict";
@@ -1893,6 +1893,9 @@ define("coalesce/model/errors", ['../utils/base_class'], function($__0) {
   };
   var $Errors = Errors;
   ($traceurRuntime.createClass)(Errors, {
+    set: function(name, value) {
+      this[name] = value;
+    },
     forEach: function(callback, binding) {
       for (var key in this) {
         if (!this.hasOwnProperty(key))
@@ -2562,7 +2565,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.1cd55114',
+    VERSION: '0.4.0+dev.2eba6378',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -3546,7 +3549,7 @@ define("coalesce/rest/serializers/errors", ['../../serializers/base', '../../err
       var Type = this.container.lookupFactory('model:errors');
       var res = Type.create();
       for (var key in serialized) {
-        res[this.transformPropertyKey(key)] = serialized[key];
+        res.set(this.transformPropertyKey(key), serialized[key]);
       }
       if (xhr) {
         res.status = xhr.status;

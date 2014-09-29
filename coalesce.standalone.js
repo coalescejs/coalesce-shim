@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.1cd55114
+ * @version   0.4.0+dev.2eba6378
  */
 (function() {
 var define, requireModule, require, requirejs;
@@ -5082,6 +5082,9 @@ define("coalesce/model/errors", ['../utils/base_class'], function($__0) {
   };
   var $Errors = Errors;
   ($traceurRuntime.createClass)(Errors, {
+    set: function(name, value) {
+      this[name] = value;
+    },
     forEach: function(callback, binding) {
       for (var key in this) {
         if (!this.hasOwnProperty(key))
@@ -5757,7 +5760,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.1cd55114',
+    VERSION: '0.4.0+dev.2eba6378',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -6743,7 +6746,7 @@ define("coalesce/rest/serializers/errors", ['../../serializers/base', '../../err
       var Type = this.container.lookupFactory('model:errors');
       var res = Type.create();
       for (var key in serialized) {
-        res[this.transformPropertyKey(key)] = serialized[key];
+        res.set(this.transformPropertyKey(key), serialized[key]);
       }
       if (xhr) {
         res.status = xhr.status;
