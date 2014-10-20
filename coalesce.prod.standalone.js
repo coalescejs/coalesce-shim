@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.2eba6378
+ * @version   0.4.0+dev.628f2efa
  */
 (function() {
 var define, requireModule, require, requirejs;
@@ -5741,7 +5741,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.2eba6378',
+    VERSION: '0.4.0+dev.628f2efa',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -6605,7 +6605,7 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
         url.push(this.pathForType(typeKey));
       }
       if (id) {
-        url.push(id);
+        url.push(encodeURIComponent(id));
       }
       if (prefix) {
         url.unshift(prefix);
