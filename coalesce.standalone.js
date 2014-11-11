@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.628f2efa
+ * @version   0.4.0+dev.87eda810
  */
 (function() {
 var define, requireModule, require, requirejs;
@@ -145,16 +145,19 @@ var define, requireModule, require, requirejs;
   var symbolDataProperty = newUniqueString();
   var symbolValues = $create(null);
   var privateNames = $create(null);
+  function isPrivateName(s) {
+    return privateNames[s];
+  }
   function createPrivateName() {
     var s = newUniqueString();
     privateNames[s] = true;
     return s;
   }
-  function isSymbol(symbol) {
+  function isShimSymbol(symbol) {
     return typeof symbol === 'object' && symbol instanceof SymbolValue;
   }
   function typeOf(v) {
-    if (isSymbol(v))
+    if (isShimSymbol(v))
       return 'symbol';
     return typeof v;
   }
@@ -233,35 +236,43 @@ var define, requireModule, require, requirejs;
     getOwnHashObject(object);
     return $seal.apply(this, arguments);
   }
-  Symbol.iterator = Symbol();
   freeze(SymbolValue.prototype);
+  function isSymbolString(s) {
+    return symbolValues[s] || privateNames[s];
+  }
   function toProperty(name) {
-    if (isSymbol(name))
+    if (isShimSymbol(name))
       return name[symbolInternalProperty];
     return name;
   }
-  function getOwnPropertyNames(object) {
+  function removeSymbolKeys(array) {
     var rv = [];
-    var names = $getOwnPropertyNames(object);
-    for (var i = 0; i < names.length; i++) {
-      var name = names[i];
-      if (!symbolValues[name] && !privateNames[name])
-        rv.push(name);
+    for (var i = 0; i < array.length; i++) {
+      if (!isSymbolString(array[i])) {
+        rv.push(array[i]);
+      }
     }
     return rv;
   }
-  function getOwnPropertyDescriptor(object, name) {
-    return $getOwnPropertyDescriptor(object, toProperty(name));
+  function getOwnPropertyNames(object) {
+    return removeSymbolKeys($getOwnPropertyNames(object));
+  }
+  function keys(object) {
+    return removeSymbolKeys($keys(object));
   }
   function getOwnPropertySymbols(object) {
     var rv = [];
     var names = $getOwnPropertyNames(object);
     for (var i = 0; i < names.length; i++) {
       var symbol = symbolValues[names[i]];
-      if (symbol)
+      if (symbol) {
         rv.push(symbol);
+      }
     }
     return rv;
+  }
+  function getOwnPropertyDescriptor(object, name) {
+    return $getOwnPropertyDescriptor(object, toProperty(name));
   }
   function hasOwnProperty(name) {
     return $hasOwnProperty.call(this, toProperty(name));
@@ -269,23 +280,8 @@ var define, requireModule, require, requirejs;
   function getOption(name) {
     return global.traceur && global.traceur.options[name];
   }
-  function setProperty(object, name, value) {
-    var sym,
-        desc;
-    if (isSymbol(name)) {
-      sym = name;
-      name = name[symbolInternalProperty];
-    }
-    object[name] = value;
-    if (sym && (desc = $getOwnPropertyDescriptor(object, name)))
-      $defineProperty(object, name, {enumerable: false});
-    return value;
-  }
   function defineProperty(object, name, descriptor) {
-    if (isSymbol(name)) {
-      if (descriptor.enumerable) {
-        descriptor = $create(descriptor, {enumerable: {value: false}});
-      }
+    if (isShimSymbol(name)) {
       name = name[symbolInternalProperty];
     }
     $defineProperty(object, name, descriptor);
@@ -299,14 +295,14 @@ var define, requireModule, require, requirejs;
     $defineProperty(Object, 'freeze', {value: freeze});
     $defineProperty(Object, 'preventExtensions', {value: preventExtensions});
     $defineProperty(Object, 'seal', {value: seal});
-    Object.getOwnPropertySymbols = getOwnPropertySymbols;
+    $defineProperty(Object, 'keys', {value: keys});
   }
   function exportStar(object) {
     for (var i = 1; i < arguments.length; i++) {
       var names = $getOwnPropertyNames(arguments[i]);
       for (var j = 0; j < names.length; j++) {
         var name = names[j];
-        if (privateNames[name])
+        if (isSymbolString(name))
           continue;
         (function(mod, name) {
           $defineProperty(object, name, {
@@ -334,34 +330,40 @@ var define, requireModule, require, requirejs;
     }
     return argument;
   }
+  function polyfillSymbol(global, Symbol) {
+    if (!global.Symbol) {
+      global.Symbol = Symbol;
+      Object.getOwnPropertySymbols = getOwnPropertySymbols;
+    }
+    if (!global.Symbol.iterator) {
+      global.Symbol.iterator = Symbol('Symbol.iterator');
+    }
+  }
   function setupGlobals(global) {
-    global.Symbol = Symbol;
+    polyfillSymbol(global, Symbol);
     global.Reflect = global.Reflect || {};
     global.Reflect.global = global.Reflect.global || global;
     polyfillObject(global.Object);
   }
   setupGlobals(global);
   global.$traceurRuntime = {
-    createPrivateName: createPrivateName,
-    exportStar: exportStar,
-    getOwnHashObject: getOwnHashObject,
-    privateNames: privateNames,
-    setProperty: setProperty,
-    setupGlobals: setupGlobals,
-    toObject: toObject,
-    isObject: isObject,
-    toProperty: toProperty,
-    type: types,
-    typeof: typeOf,
     checkObjectCoercible: checkObjectCoercible,
-    hasOwnProperty: function(o, p) {
-      return hasOwnProperty.call(o, p);
-    },
+    createPrivateName: createPrivateName,
     defineProperties: $defineProperties,
     defineProperty: $defineProperty,
+    exportStar: exportStar,
+    getOwnHashObject: getOwnHashObject,
     getOwnPropertyDescriptor: $getOwnPropertyDescriptor,
     getOwnPropertyNames: $getOwnPropertyNames,
-    keys: $keys
+    isObject: isObject,
+    isPrivateName: isPrivateName,
+    isSymbolString: isSymbolString,
+    keys: $keys,
+    setupGlobals: setupGlobals,
+    toObject: toObject,
+    toProperty: toProperty,
+    type: types,
+    typeof: typeOf
   };
 })(typeof global !== 'undefined' ? global : this);
 (function() {
@@ -394,6 +396,9 @@ var define, requireModule, require, requirejs;
   var $getOwnPropertyDescriptor = $traceurRuntime.getOwnPropertyDescriptor;
   var $getOwnPropertyNames = $traceurRuntime.getOwnPropertyNames;
   var $getPrototypeOf = Object.getPrototypeOf;
+  var $__0 = Object,
+      getOwnPropertyNames = $__0.getOwnPropertyNames,
+      getOwnPropertySymbols = $__0.getOwnPropertySymbols;
   function superDescriptor(homeObject, name) {
     var proto = $getPrototypeOf(homeObject);
     do {
@@ -422,15 +427,19 @@ var define, requireModule, require, requirejs;
       descriptor.set.call(self, value);
       return value;
     }
-    throw $TypeError("super has no setter '" + name + "'.");
+    throw $TypeError(("super has no setter '" + name + "'."));
   }
   function getDescriptors(object) {
-    var descriptors = {},
-        name,
-        names = $getOwnPropertyNames(object);
+    var descriptors = {};
+    var names = getOwnPropertyNames(object);
     for (var i = 0; i < names.length; i++) {
       var name = names[i];
       descriptors[name] = $getOwnPropertyDescriptor(object, name);
+    }
+    var symbols = getOwnPropertySymbols(object);
+    for (var i = 0; i < symbols.length; i++) {
+      var symbol = symbols[i];
+      descriptors[$traceurRuntime.toProperty(symbol)] = $getOwnPropertyDescriptor(object, $traceurRuntime.toProperty(symbol));
     }
     return descriptors;
   }
@@ -841,11 +850,38 @@ var define, requireModule, require, requirejs;
   };
   ($traceurRuntime.createClass)(UncoatedModuleEntry, {}, {});
   var ModuleEvaluationError = function ModuleEvaluationError(erroneousModuleName, cause) {
-    this.message = this.constructor.name + (cause ? ': \'' + cause + '\'' : '') + ' in ' + erroneousModuleName;
+    this.message = this.constructor.name + ': ' + this.stripCause(cause) + ' in ' + erroneousModuleName;
+    if (!(cause instanceof $ModuleEvaluationError) && cause.stack)
+      this.stack = this.stripStack(cause.stack);
+    else
+      this.stack = '';
   };
-  ($traceurRuntime.createClass)(ModuleEvaluationError, {loadedBy: function(moduleName) {
-      this.message += '\n loaded by ' + moduleName;
-    }}, {}, Error);
+  var $ModuleEvaluationError = ModuleEvaluationError;
+  ($traceurRuntime.createClass)(ModuleEvaluationError, {
+    stripError: function(message) {
+      return message.replace(/.*Error:/, this.constructor.name + ':');
+    },
+    stripCause: function(cause) {
+      if (!cause)
+        return '';
+      if (!cause.message)
+        return cause + '';
+      return this.stripError(cause.message);
+    },
+    loadedBy: function(moduleName) {
+      this.stack += '\n loaded by ' + moduleName;
+    },
+    stripStack: function(causeStack) {
+      var stack = [];
+      causeStack.split('\n').some((function(frame) {
+        if (/UncoatedModuleInstantiator/.test(frame))
+          return true;
+        stack.push(frame);
+      }));
+      stack[0] = this.stripError(stack[0]);
+      return stack.join('\n');
+    }
+  }, {}, Error);
   var UncoatedModuleInstantiator = function UncoatedModuleInstantiator(url, func) {
     $traceurRuntime.superCall(this, $UncoatedModuleInstantiator.prototype, "constructor", [url, null]);
     this.func = func;
@@ -994,9 +1030,9 @@ var define, requireModule, require, requirejs;
     return instantiator && instantiator.getUncoatedModule();
   };
 })(typeof global !== 'undefined' ? global : this);
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/utils", [], function() {
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/utils", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/utils";
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/utils";
   var $ceil = Math.ceil;
   var $floor = Math.floor;
   var $isFinite = isFinite;
@@ -1154,13 +1190,13 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/utils", [], functi
     }
   };
 });
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function() {
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Map", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Map";
-  var $__3 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      isObject = $__3.isObject,
-      maybeAddIterator = $__3.maybeAddIterator,
-      registerPolyfill = $__3.registerPolyfill;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Map";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      isObject = $__0.isObject,
+      maybeAddIterator = $__0.maybeAddIterator,
+      registerPolyfill = $__0.registerPolyfill;
   var getOwnHashObject = $traceurRuntime.getOwnHashObject;
   var $hasOwnProperty = Object.prototype.hasOwnProperty;
   var deletedSentinel = {};
@@ -1189,11 +1225,11 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
     }
     initMap(this);
     if (iterable !== null && iterable !== undefined) {
-      for (var $__5 = iterable[Symbol.iterator](),
-          $__6; !($__6 = $__5.next()).done; ) {
-        var $__7 = $__6.value,
-            key = $__7[0],
-            value = $__7[1];
+      for (var $__2 = iterable[Symbol.iterator](),
+          $__3; !($__3 = $__2.next()).done; ) {
+        var $__4 = $__3.value,
+            key = $__4[0],
+            value = $__4[1];
         {
           this.set(key, value);
         }
@@ -1265,8 +1301,7 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
     },
     forEach: function(callbackFn) {
       var thisArg = arguments[1];
-      for (var i = 0,
-          len = this.entries_.length; i < len; i += 2) {
+      for (var i = 0; i < this.entries_.length; i += 2) {
         var key = this.entries_[i];
         var value = this.entries_[i + 1];
         if (key === deletedSentinel)
@@ -1274,20 +1309,19 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
         callbackFn.call(thisArg, value, key, this);
       }
     },
-    entries: $traceurRuntime.initGeneratorFunction(function $__8() {
+    entries: $traceurRuntime.initGeneratorFunction(function $__5() {
       var i,
-          len,
           key,
           value;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
-              i = 0, len = this.entries_.length;
+              i = 0;
               $ctx.state = 12;
               break;
             case 12:
-              $ctx.state = (i < len) ? 8 : -2;
+              $ctx.state = (i < this.entries_.length) ? 8 : -2;
               break;
             case 4:
               i += 2;
@@ -1311,22 +1345,21 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
             default:
               return $ctx.end();
           }
-      }, $__8, this);
+      }, $__5, this);
     }),
-    keys: $traceurRuntime.initGeneratorFunction(function $__9() {
+    keys: $traceurRuntime.initGeneratorFunction(function $__6() {
       var i,
-          len,
           key,
           value;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
-              i = 0, len = this.entries_.length;
+              i = 0;
               $ctx.state = 12;
               break;
             case 12:
-              $ctx.state = (i < len) ? 8 : -2;
+              $ctx.state = (i < this.entries_.length) ? 8 : -2;
               break;
             case 4:
               i += 2;
@@ -1350,22 +1383,21 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
             default:
               return $ctx.end();
           }
-      }, $__9, this);
+      }, $__6, this);
     }),
-    values: $traceurRuntime.initGeneratorFunction(function $__10() {
+    values: $traceurRuntime.initGeneratorFunction(function $__7() {
       var i,
-          len,
           key,
           value;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
-              i = 0, len = this.entries_.length;
+              i = 0;
               $ctx.state = 12;
               break;
             case 12:
-              $ctx.state = (i < len) ? 8 : -2;
+              $ctx.state = (i < this.entries_.length) ? 8 : -2;
               break;
             case 4:
               i += 2;
@@ -1389,7 +1421,7 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
             default:
               return $ctx.end();
           }
-      }, $__10, this);
+      }, $__7, this);
     })
   }, {});
   Object.defineProperty(Map.prototype, Symbol.iterator, {
@@ -1398,12 +1430,14 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
     value: Map.prototype.entries
   });
   function polyfillMap(global) {
-    var $__7 = global,
-        Object = $__7.Object,
-        Symbol = $__7.Symbol;
+    var $__4 = global,
+        Object = $__4.Object,
+        Symbol = $__4.Symbol;
     if (!global.Map)
       global.Map = Map;
     var mapPrototype = global.Map.prototype;
+    if (mapPrototype.entries === undefined)
+      global.Map = Map;
     if (mapPrototype.entries) {
       maybeAddIterator(mapPrototype, mapPrototype.entries, Symbol);
       maybeAddIterator(Object.getPrototypeOf(new global.Map().entries()), function() {
@@ -1421,15 +1455,15 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Map", [], function
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Map" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Set", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Map" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Set", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Set";
-  var $__11 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      isObject = $__11.isObject,
-      maybeAddIterator = $__11.maybeAddIterator,
-      registerPolyfill = $__11.registerPolyfill;
-  var Map = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Map").Map;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Set";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      isObject = $__0.isObject,
+      maybeAddIterator = $__0.maybeAddIterator,
+      registerPolyfill = $__0.registerPolyfill;
+  var Map = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Map").Map;
   var getOwnHashObject = $traceurRuntime.getOwnHashObject;
   var $hasOwnProperty = Object.prototype.hasOwnProperty;
   function initSet(set) {
@@ -1444,9 +1478,9 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Set", [], function
     }
     initSet(this);
     if (iterable !== null && iterable !== undefined) {
-      for (var $__15 = iterable[Symbol.iterator](),
-          $__16; !($__16 = $__15.next()).done; ) {
-        var item = $__16.value;
+      for (var $__4 = iterable[Symbol.iterator](),
+          $__5; !($__5 = $__4.next()).done; ) {
+        var item = $__5.value;
         {
           this.add(item);
         }
@@ -1472,72 +1506,72 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Set", [], function
     },
     forEach: function(callbackFn) {
       var thisArg = arguments[1];
-      var $__13 = this;
+      var $__2 = this;
       return this.map_.forEach((function(value, key) {
-        callbackFn.call(thisArg, key, key, $__13);
+        callbackFn.call(thisArg, key, key, $__2);
       }));
     },
-    values: $traceurRuntime.initGeneratorFunction(function $__18() {
-      var $__19,
-          $__20;
+    values: $traceurRuntime.initGeneratorFunction(function $__7() {
+      var $__8,
+          $__9;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
-              $__19 = this.map_.keys()[Symbol.iterator]();
+              $__8 = this.map_.keys()[Symbol.iterator]();
               $ctx.sent = void 0;
               $ctx.action = 'next';
               $ctx.state = 12;
               break;
             case 12:
-              $__20 = $__19[$ctx.action]($ctx.sentIgnoreThrow);
+              $__9 = $__8[$ctx.action]($ctx.sentIgnoreThrow);
               $ctx.state = 9;
               break;
             case 9:
-              $ctx.state = ($__20.done) ? 3 : 2;
+              $ctx.state = ($__9.done) ? 3 : 2;
               break;
             case 3:
-              $ctx.sent = $__20.value;
+              $ctx.sent = $__9.value;
               $ctx.state = -2;
               break;
             case 2:
               $ctx.state = 12;
-              return $__20.value;
+              return $__9.value;
             default:
               return $ctx.end();
           }
-      }, $__18, this);
+      }, $__7, this);
     }),
-    entries: $traceurRuntime.initGeneratorFunction(function $__21() {
-      var $__22,
-          $__23;
+    entries: $traceurRuntime.initGeneratorFunction(function $__10() {
+      var $__11,
+          $__12;
       return $traceurRuntime.createGeneratorInstance(function($ctx) {
         while (true)
           switch ($ctx.state) {
             case 0:
-              $__22 = this.map_.entries()[Symbol.iterator]();
+              $__11 = this.map_.entries()[Symbol.iterator]();
               $ctx.sent = void 0;
               $ctx.action = 'next';
               $ctx.state = 12;
               break;
             case 12:
-              $__23 = $__22[$ctx.action]($ctx.sentIgnoreThrow);
+              $__12 = $__11[$ctx.action]($ctx.sentIgnoreThrow);
               $ctx.state = 9;
               break;
             case 9:
-              $ctx.state = ($__23.done) ? 3 : 2;
+              $ctx.state = ($__12.done) ? 3 : 2;
               break;
             case 3:
-              $ctx.sent = $__23.value;
+              $ctx.sent = $__12.value;
               $ctx.state = -2;
               break;
             case 2:
               $ctx.state = 12;
-              return $__23.value;
+              return $__12.value;
             default:
               return $ctx.end();
           }
-      }, $__21, this);
+      }, $__10, this);
     })
   }, {});
   Object.defineProperty(Set.prototype, Symbol.iterator, {
@@ -1551,9 +1585,9 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Set", [], function
     value: Set.prototype.values
   });
   function polyfillSet(global) {
-    var $__17 = global,
-        Object = $__17.Object,
-        Symbol = $__17.Symbol;
+    var $__6 = global,
+        Object = $__6.Object,
+        Symbol = $__6.Symbol;
     if (!global.Set)
       global.Set = Set;
     var setPrototype = global.Set.prototype;
@@ -1574,10 +1608,10 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Set", [], function
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Set" + '');
-System.register("traceur-runtime@0.0.60/node_modules/rsvp/lib/rsvp/asap", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Set" + '');
+System.register("traceur-runtime@0.0.72/node_modules/rsvp/lib/rsvp/asap", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/node_modules/rsvp/lib/rsvp/asap";
+  var __moduleName = "traceur-runtime@0.0.72/node_modules/rsvp/lib/rsvp/asap";
   var len = 0;
   function asap(callback, arg) {
     queue[len] = callback;
@@ -1642,11 +1676,11 @@ System.register("traceur-runtime@0.0.60/node_modules/rsvp/lib/rsvp/asap", [], fu
       return $__default;
     }};
 });
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Promise", [], function() {
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Promise", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Promise";
-  var async = System.get("traceur-runtime@0.0.60/node_modules/rsvp/lib/rsvp/asap").default;
-  var registerPolyfill = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils").registerPolyfill;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Promise";
+  var async = System.get("traceur-runtime@0.0.72/node_modules/rsvp/lib/rsvp/asap").default;
+  var registerPolyfill = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils").registerPolyfill;
   var promiseRaw = {};
   function isPromise(x) {
     return x && typeof x === 'object' && x.status_ !== undefined;
@@ -1883,24 +1917,23 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Promise", [], func
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Promise" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/StringIterator", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Promise" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/StringIterator", [], function() {
   "use strict";
-  var $__29;
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/StringIterator";
-  var $__27 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      createIteratorResultObject = $__27.createIteratorResultObject,
-      isObject = $__27.isObject;
-  var $__30 = $traceurRuntime,
-      hasOwnProperty = $__30.hasOwnProperty,
-      toProperty = $__30.toProperty;
+  var $__2;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/StringIterator";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      createIteratorResultObject = $__0.createIteratorResultObject,
+      isObject = $__0.isObject;
+  var toProperty = $traceurRuntime.toProperty;
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
   var iteratedString = Symbol('iteratedString');
   var stringIteratorNextIndex = Symbol('stringIteratorNextIndex');
   var StringIterator = function StringIterator() {};
-  ($traceurRuntime.createClass)(StringIterator, ($__29 = {}, Object.defineProperty($__29, "next", {
+  ($traceurRuntime.createClass)(StringIterator, ($__2 = {}, Object.defineProperty($__2, "next", {
     value: function() {
       var o = this;
-      if (!isObject(o) || !hasOwnProperty(o, iteratedString)) {
+      if (!isObject(o) || !hasOwnProperty.call(o, iteratedString)) {
         throw new TypeError('this must be a StringIterator object');
       }
       var s = o[toProperty(iteratedString)];
@@ -1931,14 +1964,14 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/StringIterator", [
     configurable: true,
     enumerable: true,
     writable: true
-  }), Object.defineProperty($__29, Symbol.iterator, {
+  }), Object.defineProperty($__2, Symbol.iterator, {
     value: function() {
       return this;
     },
     configurable: true,
     enumerable: true,
     writable: true
-  }), $__29), {});
+  }), $__2), {});
   function createStringIterator(string) {
     var s = String(string);
     var iterator = Object.create(StringIterator.prototype);
@@ -1950,14 +1983,14 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/StringIterator", [
       return createStringIterator;
     }};
 });
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/String", [], function() {
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/String", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/String";
-  var createStringIterator = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/StringIterator").createStringIterator;
-  var $__32 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      maybeAddFunctions = $__32.maybeAddFunctions,
-      maybeAddIterator = $__32.maybeAddIterator,
-      registerPolyfill = $__32.registerPolyfill;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/String";
+  var createStringIterator = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/StringIterator").createStringIterator;
+  var $__1 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      maybeAddFunctions = $__1.maybeAddFunctions,
+      maybeAddIterator = $__1.maybeAddIterator,
+      registerPolyfill = $__1.registerPolyfill;
   var $toString = Object.prototype.toString;
   var $indexOf = String.prototype.indexOf;
   var $lastIndexOf = String.prototype.lastIndexOf;
@@ -2144,20 +2177,20 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/String", [], funct
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/String" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/ArrayIterator", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/String" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/ArrayIterator", [], function() {
   "use strict";
-  var $__36;
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/ArrayIterator";
-  var $__34 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      toObject = $__34.toObject,
-      toUint32 = $__34.toUint32,
-      createIteratorResultObject = $__34.createIteratorResultObject;
+  var $__2;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/ArrayIterator";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      toObject = $__0.toObject,
+      toUint32 = $__0.toUint32,
+      createIteratorResultObject = $__0.createIteratorResultObject;
   var ARRAY_ITERATOR_KIND_KEYS = 1;
   var ARRAY_ITERATOR_KIND_VALUES = 2;
   var ARRAY_ITERATOR_KIND_ENTRIES = 3;
   var ArrayIterator = function ArrayIterator() {};
-  ($traceurRuntime.createClass)(ArrayIterator, ($__36 = {}, Object.defineProperty($__36, "next", {
+  ($traceurRuntime.createClass)(ArrayIterator, ($__2 = {}, Object.defineProperty($__2, "next", {
     value: function() {
       var iterator = toObject(this);
       var array = iterator.iteratorObject_;
@@ -2181,14 +2214,14 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/ArrayIterator", []
     configurable: true,
     enumerable: true,
     writable: true
-  }), Object.defineProperty($__36, Symbol.iterator, {
+  }), Object.defineProperty($__2, Symbol.iterator, {
     value: function() {
       return this;
     },
     configurable: true,
     enumerable: true,
     writable: true
-  }), $__36), {});
+  }), $__2), {});
   function createArrayIterator(array, kind) {
     var object = toObject(array);
     var iterator = new ArrayIterator;
@@ -2218,23 +2251,23 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/ArrayIterator", []
     }
   };
 });
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Array", [], function() {
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Array", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Array";
-  var $__37 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/ArrayIterator"),
-      entries = $__37.entries,
-      keys = $__37.keys,
-      values = $__37.values;
-  var $__38 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      checkIterable = $__38.checkIterable,
-      isCallable = $__38.isCallable,
-      isConstructor = $__38.isConstructor,
-      maybeAddFunctions = $__38.maybeAddFunctions,
-      maybeAddIterator = $__38.maybeAddIterator,
-      registerPolyfill = $__38.registerPolyfill,
-      toInteger = $__38.toInteger,
-      toLength = $__38.toLength,
-      toObject = $__38.toObject;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Array";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/ArrayIterator"),
+      entries = $__0.entries,
+      keys = $__0.keys,
+      values = $__0.values;
+  var $__1 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      checkIterable = $__1.checkIterable,
+      isCallable = $__1.isCallable,
+      isConstructor = $__1.isConstructor,
+      maybeAddFunctions = $__1.maybeAddFunctions,
+      maybeAddIterator = $__1.maybeAddIterator,
+      registerPolyfill = $__1.registerPolyfill,
+      toInteger = $__1.toInteger,
+      toLength = $__1.toLength,
+      toObject = $__1.toObject;
   function from(arrLike) {
     var mapFn = arguments[1];
     var thisArg = arguments[2];
@@ -2249,9 +2282,9 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Array", [], functi
     }
     if (checkIterable(items)) {
       arr = isConstructor(C) ? new C() : [];
-      for (var $__39 = items[Symbol.iterator](),
-          $__40; !($__40 = $__39.next()).done; ) {
-        var item = $__40.value;
+      for (var $__2 = items[Symbol.iterator](),
+          $__3; !($__3 = $__2.next()).done; ) {
+        var item = $__3.value;
         {
           if (mapping) {
             arr[k] = mapFn.call(thisArg, item, k);
@@ -2278,8 +2311,8 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Array", [], functi
   }
   function of() {
     for (var items = [],
-        $__41 = 0; $__41 < arguments.length; $__41++)
-      items[$__41] = arguments[$__41];
+        $__4 = 0; $__4 < arguments.length; $__4++)
+      items[$__4] = arguments[$__4];
     var C = this;
     var len = items.length;
     var arr = isConstructor(C) ? new C(len) : new Array(len);
@@ -2321,20 +2354,18 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Array", [], functi
       throw TypeError();
     }
     for (var i = 0; i < len; i++) {
-      if (i in object) {
-        var value = object[i];
-        if (predicate.call(thisArg, value, i, object)) {
-          return returnIndex ? i : value;
-        }
+      var value = object[i];
+      if (predicate.call(thisArg, value, i, object)) {
+        return returnIndex ? i : value;
       }
     }
     return returnIndex ? -1 : undefined;
   }
   function polyfillArray(global) {
-    var $__42 = global,
-        Array = $__42.Array,
-        Object = $__42.Object,
-        Symbol = $__42.Symbol;
+    var $__5 = global,
+        Array = $__5.Array,
+        Object = $__5.Object,
+        Symbol = $__5.Symbol;
     maybeAddFunctions(Array.prototype, ['entries', entries, 'keys', keys, 'values', values, 'fill', fill, 'find', find, 'findIndex', findIndex]);
     maybeAddFunctions(Array, ['from', from, 'of', of]);
     maybeAddIterator(Array.prototype, values, Symbol);
@@ -2364,19 +2395,19 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Array", [], functi
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Array" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Object", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Array" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Object", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Object";
-  var $__43 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      maybeAddFunctions = $__43.maybeAddFunctions,
-      registerPolyfill = $__43.registerPolyfill;
-  var $__44 = $traceurRuntime,
-      defineProperty = $__44.defineProperty,
-      getOwnPropertyDescriptor = $__44.getOwnPropertyDescriptor,
-      getOwnPropertyNames = $__44.getOwnPropertyNames,
-      keys = $__44.keys,
-      privateNames = $__44.privateNames;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Object";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      maybeAddFunctions = $__0.maybeAddFunctions,
+      registerPolyfill = $__0.registerPolyfill;
+  var $__1 = $traceurRuntime,
+      defineProperty = $__1.defineProperty,
+      getOwnPropertyDescriptor = $__1.getOwnPropertyDescriptor,
+      getOwnPropertyNames = $__1.getOwnPropertyNames,
+      isPrivateName = $__1.isPrivateName,
+      keys = $__1.keys;
   function is(left, right) {
     if (left === right)
       return left !== 0 || 1 / left === 1 / right;
@@ -2390,7 +2421,7 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Object", [], funct
           length = props.length;
       for (p = 0; p < length; p++) {
         var name = props[p];
-        if (privateNames[name])
+        if (isPrivateName(name))
           continue;
         target[name] = source[name];
       }
@@ -2404,7 +2435,7 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Object", [], funct
         length = props.length;
     for (p = 0; p < length; p++) {
       var name = props[p];
-      if (privateNames[name])
+      if (isPrivateName(name))
         continue;
       descriptor = getOwnPropertyDescriptor(source, props[p]);
       defineProperty(target, props[p], descriptor);
@@ -2431,16 +2462,16 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Object", [], funct
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Object" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Number", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Object" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/Number", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/Number";
-  var $__46 = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils"),
-      isNumber = $__46.isNumber,
-      maybeAddConsts = $__46.maybeAddConsts,
-      maybeAddFunctions = $__46.maybeAddFunctions,
-      registerPolyfill = $__46.registerPolyfill,
-      toInteger = $__46.toInteger;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/Number";
+  var $__0 = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils"),
+      isNumber = $__0.isNumber,
+      maybeAddConsts = $__0.maybeAddConsts,
+      maybeAddFunctions = $__0.maybeAddFunctions,
+      registerPolyfill = $__0.registerPolyfill,
+      toInteger = $__0.toInteger;
   var $abs = Math.abs;
   var $isFinite = isFinite;
   var $isNaN = isNaN;
@@ -2499,11 +2530,11 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/Number", [], funct
     }
   };
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/Number" + '');
-System.register("traceur-runtime@0.0.60/src/runtime/polyfills/polyfills", [], function() {
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/Number" + '');
+System.register("traceur-runtime@0.0.72/src/runtime/polyfills/polyfills", [], function() {
   "use strict";
-  var __moduleName = "traceur-runtime@0.0.60/src/runtime/polyfills/polyfills";
-  var polyfillAll = System.get("traceur-runtime@0.0.60/src/runtime/polyfills/utils").polyfillAll;
+  var __moduleName = "traceur-runtime@0.0.72/src/runtime/polyfills/polyfills";
+  var polyfillAll = System.get("traceur-runtime@0.0.72/src/runtime/polyfills/utils").polyfillAll;
   polyfillAll(this);
   var setupGlobals = $traceurRuntime.setupGlobals;
   $traceurRuntime.setupGlobals = function(global) {
@@ -2512,7 +2543,7 @@ System.register("traceur-runtime@0.0.60/src/runtime/polyfills/polyfills", [], fu
   };
   return {};
 });
-System.get("traceur-runtime@0.0.60/src/runtime/polyfills/polyfills" + '');
+System.get("traceur-runtime@0.0.72/src/runtime/polyfills/polyfills" + '');
 
 define("backburner", 
   ["backburner/deferred_action_queues","exports"],
@@ -3181,7 +3212,7 @@ define("backburner/queue",
     __exports__.Queue = Queue;
   });
 
-define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71) {
+define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './session/query_cache', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71,$__73) {
   "use strict";
   var __moduleName = "coalesce";
   if (!$__0 || !$__0.__esModule)
@@ -3258,6 +3289,8 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
     $__69 = {default: $__69};
   if (!$__71 || !$__71.__esModule)
     $__71 = {default: $__71};
+  if (!$__73 || !$__73.__esModule)
+    $__73 = {default: $__73};
   var Coalesce = $__0.default;
   var setupContainer = $__2.setupContainer;
   var Container = $__4.default;
@@ -3293,10 +3326,11 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   var CollectionManager = $__63.default;
   var InverseManager = $__65.default;
   var Session = $__67.default;
-  var isEqual = $__69.default;
-  var $__72 = $__71,
-      pluralize = $__72.pluralize,
-      singularize = $__72.singularize;
+  var QueryCache = $__69.default;
+  var isEqual = $__71.default;
+  var $__74 = $__73,
+      pluralize = $__74.pluralize,
+      singularize = $__74.singularize;
   Coalesce.Container = Container;
   Coalesce.setupContainer = setupContainer;
   Coalesce.Adapter = Adapter;
@@ -3330,6 +3364,7 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   Coalesce.CollectionManager = CollectionManager;
   Coalesce.InverseManager = InverseManager;
   Coalesce.Session = Session;
+  Coalesce.QueryCache = QueryCache;
   Coalesce.pluralize = pluralize;
   Coalesce.singularize = singularize;
   Coalesce.isEqual = isEqual;
@@ -4122,7 +4157,7 @@ define("coalesce/collections/observable_array", ['../error', '../utils/copy', '.
   };
 });
 
-define("coalesce/container", ['./container/container', './session/session', './id_manager', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './merge/per_field', './rest/rest_adapter', './model/errors'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__24,$__26,$__28) {
+define("coalesce/container", ['./container/container', './session/session', './id_manager', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './merge/per_field', './session/query_cache', './rest/rest_adapter', './model/errors'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__24,$__26,$__28,$__30) {
   "use strict";
   var __moduleName = "coalesce/container";
   if (!$__0 || !$__0.__esModule)
@@ -4155,6 +4190,8 @@ define("coalesce/container", ['./container/container', './session/session', './i
     $__26 = {default: $__26};
   if (!$__28 || !$__28.__esModule)
     $__28 = {default: $__28};
+  if (!$__30 || !$__30.__esModule)
+    $__30 = {default: $__30};
   var Container = $__0.default;
   var Session = $__2.default;
   var IdManager = $__4.default;
@@ -4168,14 +4205,16 @@ define("coalesce/container", ['./container/container', './session/session', './i
   var RevisionSerializer = $__20.default;
   var StringSerializer = $__22.default;
   var PerField = $__24.default;
-  var RestAdapter = $__26.default;
-  var Errors = $__28.default;
+  var QueryCache = $__26.default;
+  var RestAdapter = $__28.default;
+  var Errors = $__30.default;
   function setupContainer(container) {
     container.register('model:errors', Errors);
     setupSession(container);
     setupInjections(container);
     setupSerializers(container);
     setupMergeStrategies(container);
+    setupQueryCaches(container);
   }
   function setupSession(container) {
     container.register('adapter:main', container.lookupFactory('adapter:application') || RestAdapter);
@@ -4203,6 +4242,9 @@ define("coalesce/container", ['./container/container', './session/session', './i
   function setupMergeStrategies(container) {
     container.register('merge-strategy:per-field', PerField);
     container.register('merge-strategy:default', PerField);
+  }
+  function setupQueryCaches(container) {
+    container.register('query-cache:default', QueryCache);
   }
   function CoalesceContainer() {
     Container.apply(this, arguments);
@@ -4655,6 +4697,32 @@ define("coalesce/factories/merge", [], function() {
       return mergeStrategy;
     }}, {});
   var $__default = MergeFactory;
+  return {
+    get default() {
+      return $__default;
+    },
+    __esModule: true
+  };
+});
+
+define("coalesce/factories/query_cache", [], function() {
+  "use strict";
+  var __moduleName = "coalesce/factories/query_cache";
+  var QueryCacheFactory = function QueryCacheFactory(container) {
+    this.container = container;
+  };
+  ($traceurRuntime.createClass)(QueryCacheFactory, {queryCacheFor: function(typeKey) {
+      console.assert(typeof typeKey === 'string', 'Passed in typeKey must be a string');
+      var queryCache = this.container.lookup('query-cache:' + typeKey);
+      if (!queryCache) {
+        var QueryCache = this.container.lookupFactory('query-cache:default');
+        this.container.register('query-cache:' + typeKey, QueryCache);
+        queryCache = this.container.lookup('query-cache:' + typeKey);
+      }
+      queryCache.typeKey = typeKey;
+      return queryCache;
+    }}, {});
+  var $__default = QueryCacheFactory;
   return {
     get default() {
       return $__default;
@@ -5379,7 +5447,9 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       dest._meta = copy(this._meta);
     },
     copyAttributes: function(dest) {
-      dest._attributes = copy(this._attributes, true);
+      this.loadedAttributes.forEach(function(options, name) {
+        dest._attributes[name] = copy(this._attributes[name], true);
+      }, this);
     },
     copyRelationships: function(dest) {
       this.eachLoadedRelationship(function(name, relationship) {
@@ -5760,7 +5830,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.628f2efa',
+    VERSION: '0.4.0+dev.87eda810',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -6022,6 +6092,12 @@ define("coalesce/rest/operation", ['../namespace'], function($__0) {
       this.resolve(promise);
       return this;
     },
+    fail: function() {
+      var errors = this.adapter.serializerFactory.serializerFor('errors');
+      errors.status = 0;
+      this.model.errors = errors;
+      return this.model;
+    },
     get _embeddedParent() {
       var model = this.model,
           parentModel = this.adapter._embeddedManager.findParent(model),
@@ -6085,7 +6161,8 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace', '../util
   ($traceurRuntime.createClass)(OperationGraph, {
     perform: function() {
       var adapter = this.adapter,
-          cumulative = [];
+          results = [],
+          pending = [];
       function createNestedPromise(op) {
         var promise;
         if (op.parents.size > 0) {
@@ -6096,10 +6173,12 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace', '../util
           promise = op.perform();
         }
         promise = promise.then(function(model) {
-          cumulative.push(model);
+          results.push(model);
+          _.remove(pending, op);
           return model;
         }, function(model) {
-          cumulative.push(model);
+          results.push(model);
+          _.remove(pending, op);
           throw model;
         });
         if (op.children.size > 0) {
@@ -6117,11 +6196,16 @@ define("coalesce/rest/operation_graph", ['./operation', '../namespace', '../util
       var promises = [];
       this.ops.forEach(function(op, model) {
         promises.push(createNestedPromise(op));
+        pending.push(op);
       });
       return Coalesce.Promise.all(promises).then(function() {
-        return cumulative;
+        return results;
       }, function(err) {
-        throw cumulative;
+        var failures = pending.map(function(op) {
+          return op.fail();
+        });
+        results = results.concat(failures);
+        throw results;
       });
     },
     build: function() {
@@ -6372,18 +6456,18 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
       return this.defaultSerializer;
     },
     _deserializePromise: function(promise, context, opts) {
+      var serializer = opts.deserializer || opts.serializer,
+          serializerOptions = opts.serializerOptions || {};
+      if (!serializer && context) {
+        serializer = this.serializerForContext(context);
+      }
+      if (serializer) {
+        serializer = this.serializerFor(serializer);
+        _.defaults(serializerOptions, {context: context});
+      }
       var adapter = this;
       return promise.then(function(data) {
         if (opts.deserialize !== false) {
-          var serializer = opts.deserializer || opts.serializer,
-              serializerOptions = opts.serializerOptions || {};
-          if (!serializer && context) {
-            serializer = adapter.serializerForContext(context);
-          }
-          if (serializer) {
-            serializer = adapter.serializerFor(serializer);
-            _.defaults(serializerOptions, {context: context});
-          }
           return serializer.deserialize(data, serializerOptions);
         }
         return data;
@@ -6395,19 +6479,22 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
           } else {
             data = {};
           }
-          var serializer = opts.errorSerializer || opts.deserializer || opts.serializer,
-              serializerOptions = opts.serializerOptions || {};
-          if (!serializer && context) {
-            serializer = adapter.serializerForContext(context);
+          serializerOptions = _.defaults(serializerOptions, {
+            context: context,
+            xhr: xhr
+          });
+          if (xhr.status === 422) {
+            throw serializer.deserialize(data, serializerOptions);
+          } else {
+            serializer = adapter.serializerFor(opts.errorSerializer || 'errors');
+            var errors = serializer.deserialize(data, serializerOptions);
+            if (context.isModel) {
+              var model = context.lazyCopy();
+              model.errors = errors;
+              throw model;
+            }
+            throw errors;
           }
-          if (serializer) {
-            serializer = adapter.serializerFor(serializer);
-            serializerOptions = _.defaults(serializerOptions, {
-              context: context,
-              xhr: xhr
-            });
-          }
-          throw serializer.deserialize(data, serializerOptions);
         }
         throw xhr;
       });
@@ -6419,9 +6506,10 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
       function merge(deserialized) {
         if (typeof deserialized.merge === 'function') {
           return deserialized.merge(session);
-        } else {
+        } else if (deserialized.isModel) {
           return session.merge(deserialized);
         }
+        return deserialized;
       }
       return promise.then(function(deserialized) {
         return merge(deserialized);
@@ -6583,13 +6671,16 @@ define("coalesce/rest/rest_adapter", ['../namespace', '../adapter', './embedded_
     buildDirtySet: function(session) {
       var result = new ModelSet();
       session.dirtyModels.forEach(function(model) {
-        result.add(model.copy());
+        var copy = model.copy();
+        copy.errors = null;
+        result.add(copy);
         this._embeddedManager.eachEmbeddedRelative(model, function(embeddedModel) {
           this._embeddedManager.updateParents(embeddedModel);
           if (result.contains(embeddedModel)) {
             return;
           }
           var copy = embeddedModel.copy();
+          copy.errors = null;
           result.add(copy);
         }, this);
       }, this);
@@ -6849,6 +6940,7 @@ define("coalesce/rest/serializers/payload", ['../../utils/materialize_relationsh
         }
         var typeKey = this.typeKeyFor(prop),
             serializer = this.serializerFor(typeKey);
+        console.assert(!!serializer, ("No serializer found for '" + typeKey + "'"));
         if (Array.isArray(value)) {
           for (var i = 0; i < value.length; i++) {
             var model = serializer.deserialize(value[i]);
@@ -7614,7 +7706,105 @@ define("coalesce/session/inverse_manager", ['../collections/model_set', '../util
   };
 });
 
-define("coalesce/session/session", ['../collections/model_array', '../collections/model_set', './collection_manager', './inverse_manager', '../model/model', './cache', '../factories/type', '../factories/merge', '../utils/copy', '../error', '../utils/array_from'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20) {
+define("coalesce/session/query", ['../collections/observable_array'], function($__0) {
+  "use strict";
+  var __moduleName = "coalesce/session/query";
+  if (!$__0 || !$__0.__esModule)
+    $__0 = {default: $__0};
+  var ObservableArray = $__0.default;
+  var Query = function Query(session, type, params) {
+    this.session = session;
+    this._type = type;
+    this._params = params;
+    $traceurRuntime.superCall(this, $Query.prototype, "constructor", []);
+  };
+  var $Query = Query;
+  ($traceurRuntime.createClass)(Query, {
+    get params() {
+      return this._params;
+    },
+    get type() {
+      return this._type;
+    },
+    invalidate: function() {
+      return this.session.invalidateQuery(this);
+    },
+    refresh: function() {
+      return this.session.refreshQuery(this);
+    }
+  }, {}, ObservableArray);
+  var $__default = Query;
+  return {
+    get default() {
+      return $__default;
+    },
+    __esModule: true
+  };
+});
+
+define("coalesce/session/query_cache", ['../namespace', '../utils/base_class'], function($__0,$__2) {
+  "use strict";
+  var __moduleName = "coalesce/session/query_cache";
+  if (!$__0 || !$__0.__esModule)
+    $__0 = {default: $__0};
+  if (!$__2 || !$__2.__esModule)
+    $__2 = {default: $__2};
+  var Coalesce = $__0.default;
+  var BaseClass = $__2.default;
+  var QueryCache = function QueryCache() {
+    this._queries = {};
+    this._promises = {};
+  };
+  ($traceurRuntime.createClass)(QueryCache, {
+    add: function(query) {
+      var promise = arguments[1] !== (void 0) ? arguments[1] : null;
+      var key = this.keyFor(query.type, query.params);
+      if (promise && this.shouldCache(query)) {
+        this._promises[key] = promise;
+      }
+      this._queries[key] = query;
+    },
+    shouldCache: function(query) {
+      return true;
+    },
+    remove: function(query) {
+      var key = this.keyFor(query.type, query.params);
+      delete this._queries[key];
+      delete this._promises[key];
+    },
+    removeAll: function(type) {
+      var queries = this._queries;
+      for (var key in queries) {
+        if (!queries.hasOwnProperty(key))
+          continue;
+        var typeKey = key.split('$')[0];
+        if (type.typeKey === typeKey) {
+          this.remove(queries[key]);
+        }
+      }
+    },
+    getQuery: function(type, params) {
+      var key = this.keyFor(type, params);
+      return this._queries[key];
+    },
+    getPromise: function(query) {
+      var key = this.keyFor(query.type, query.params);
+      return this._promises[key];
+    },
+    keyFor: function(type, params) {
+      return type.typeKey + '$' + JSON.stringify(params);
+    }
+  }, {}, BaseClass);
+  var $__default = QueryCache;
+  return {
+    get default() {
+      return $__default;
+    },
+    __esModule: true
+  };
+});
+
+define("coalesce/session/session", ['../collections/model_array', '../collections/model_set', './collection_manager', './inverse_manager', '../model/model', './cache', './query', './query_cache', '../factories/type', '../factories/merge', '../factories/query_cache', '../utils/copy', '../error', '../utils/array_from'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__24,$__26) {
   "use strict";
   var __moduleName = "coalesce/session/session";
   if (!$__0 || !$__0.__esModule)
@@ -7639,24 +7829,33 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
     $__18 = {default: $__18};
   if (!$__20 || !$__20.__esModule)
     $__20 = {default: $__20};
+  if (!$__22 || !$__22.__esModule)
+    $__22 = {default: $__22};
+  if (!$__24 || !$__24.__esModule)
+    $__24 = {default: $__24};
+  if (!$__26 || !$__26.__esModule)
+    $__26 = {default: $__26};
   var ModelArray = $__0.default;
   var ModelSet = $__2.default;
   var CollectionManager = $__4.default;
   var InverseManager = $__6.default;
   var Model = $__8.default;
   var Cache = $__10.default;
-  var TypeFactory = $__12.default;
-  var MergeFactory = $__14.default;
-  var copy = $__16.default;
-  var Error = $__18.default;
-  var array_from = $__20.default;
+  var Query = $__12.default;
+  var QueryCache = $__14.default;
+  var TypeFactory = $__16.default;
+  var MergeFactory = $__18.default;
+  var QueryCacheFactory = $__20.default;
+  var copy = $__22.default;
+  var Error = $__24.default;
+  var array_from = $__26.default;
   var uuid = 1;
-  var Session = function Session($__23) {
-    var $__24 = $__23,
-        adapter = $__24.adapter,
-        idManager = $__24.idManager,
-        container = $__24.container,
-        parent = $__24.parent;
+  var Session = function Session($__29) {
+    var $__30 = $__29,
+        adapter = $__30.adapter,
+        idManager = $__30.idManager,
+        container = $__30.container,
+        parent = $__30.parent;
     this.adapter = adapter;
     this.idManager = idManager;
     this.container = container;
@@ -7670,6 +7869,7 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
     this.cache = new Cache();
     this.typeFactory = new TypeFactory(container);
     this.mergeFactory = new MergeFactory(container);
+    this.queryCacheFactory = new QueryCacheFactory(container);
     this._dirtyCheckingSuspended = false;
     this.name = "session" + uuid++;
   };
@@ -7790,21 +7990,49 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       }
       return promise;
     },
+    refresh: function(model, opts) {
+      var session = this;
+      return this.adapter.load(model, opts, this);
+    },
     find: function(type, query, opts) {
       if (typeof query === 'object') {
         return this.query(type, query, opts);
       }
       return this.load(type, query, opts);
     },
-    query: function(type, query, opts) {
+    buildQuery: function(type, params) {
       type = this.typeFor(type);
-      var typeKey = type.typeKey;
-      var promise = this.adapter.query(typeKey, query, opts, this);
+      return new Query(this, type, params);
+    },
+    fetchQuery: function(type, params) {
+      type = this.typeFor(type);
+      var queryCache = this.queryCacheFor(type),
+          query = queryCache.getQuery(type, params);
+      if (!query) {
+        query = this.buildQuery(type, params);
+        queryCache.add(query);
+      }
+      return query;
+    },
+    query: function(type, params, opts) {
+      var type = this.typeFor(type),
+          query = this.fetchQuery(type, params),
+          queryCache = this.queryCacheFor(type),
+          promise = queryCache.getPromise(query);
+      if (!promise) {
+        promise = this.refreshQuery(query, opts);
+      }
       return promise;
     },
-    refresh: function(model, opts) {
-      var session = this;
-      return this.adapter.load(model, opts, this);
+    refreshQuery: function(query, opts) {
+      var promise = this.adapter.query(query.type.typeKey, query.params, opts, this).then(function(models) {
+        query.meta = models.meta;
+        query.replace(0, query.length, models);
+        return query;
+      });
+      var queryCache = this.queryCacheFor(query.type);
+      queryCache.add(query, promise);
+      return promise;
     },
     flush: function() {
       var session = this,
@@ -7904,6 +8132,12 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       }
       return this.typeFactory.typeFor(key);
     },
+    queryCacheFor: function(key) {
+      if (typeof key !== 'string') {
+        key = key.typeKey;
+      }
+      return this.queryCacheFactory.queryCacheFor(key);
+    },
     getShadow: function(model) {
       var shadows = this.shadows;
       var models = this.models;
@@ -7914,6 +8148,15 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
     },
     invalidate: function(model) {
       this.cache.removeModel(model);
+    },
+    invalidateQuery: function(query) {
+      var queryCache = this.queryCacheFor(query.type);
+      queryCache.remove(query);
+    },
+    invalidateQueries: function(type) {
+      var type = this.typeFor(type),
+          queryCache = this.queryCacheFor(type);
+      queryCache.removeAll(type);
     },
     markClean: function(model) {
       this.shadows.remove(model);
@@ -7950,6 +8193,7 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       return this.flush();
     },
     merge: function(model, visited) {
+      console.assert(model.isModel, (model + " is not a model"));
       if (this.parent) {
         model = this.parent.merge(model, visited);
       }
@@ -8043,11 +8287,12 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       if (!existing) {
         return model;
       }
+      var original = originals.getModel(model);
       var hasClientChanges = this._containsClientRev(model, existing);
       if (hasClientChanges) {
         ancestor = shadows.getModel(model) || existing;
       } else {
-        ancestor = originals.getModel(model);
+        ancestor = original;
       }
       if (ancestor && !this._containsRev(existing, model)) {
         this.suspendDirtyChecking(function() {
@@ -8057,9 +8302,12 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
         merged = existing;
       }
       merged.errors = copy(model.errors);
-      if (!model.isNew) {
+      if (!model.isNew && original) {
+        shadows.addData(original);
         shadows.addData(model);
         originals.remove(model);
+      } else if (model.isNew) {
+        newModels.add(existing);
       }
       return merged;
     },
@@ -8076,7 +8324,6 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       dest.id = model.id;
       dest.clientId = model.clientId;
       dest.rev = model.rev;
-      dest.isDeleted = model.isDeleted;
       this.adopt(dest);
       if (!ancestor) {
         ancestor = dest;
@@ -8121,7 +8368,7 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
 define("coalesce/utils/array_from", [], function() {
   "use strict";
   var __moduleName = "coalesce/utils/array_from";
-  var USE_NATIVE = typeof Set.prototype[Symbol.iterator] !== 'undefined';
+  var USE_NATIVE = false;
   function from_array(iterable) {
     if (USE_NATIVE || Array.isArray(iterable)) {
       return Array.from.apply(this, arguments);
