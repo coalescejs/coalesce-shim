@@ -3,9 +3,9 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.461145bd
+ * @version   0.4.0+dev.df4ccd08
  */
-define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './session/query_cache', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71,$__73) {
+define("coalesce", ['./namespace', './container', './container', './adapter', './id_manager', './collections/model_array', './collections/model_set', './collections/has_many_array', './merge/base', './merge/per_field', './model/model', './model/diff', './model/errors', './rest/serializers/errors', './rest/serializers/payload', './rest/embedded_manager', './rest/operation', './rest/operation_graph', './rest/payload', './rest/rest_adapter', './active_model/active_model_adapter', './active_model/serializers/model', './serializers/base', './serializers/belongs_to', './serializers/boolean', './serializers/date', './serializers/has_many', './serializers/id', './serializers/number', './serializers/model', './serializers/revision', './serializers/string', './session/collection_manager', './session/inverse_manager', './session/session', './session/query_cache', './session/model_cache', './utils/is_equal', './utils/inflector'], function($__0,$__2,$__4,$__6,$__8,$__10,$__12,$__14,$__16,$__18,$__20,$__22,$__23,$__25,$__27,$__29,$__31,$__33,$__35,$__37,$__39,$__41,$__43,$__45,$__47,$__49,$__51,$__53,$__55,$__57,$__59,$__61,$__63,$__65,$__67,$__69,$__71,$__73,$__75) {
   "use strict";
   var __moduleName = "coalesce";
   if (!$__0 || !$__0.__esModule)
@@ -84,6 +84,8 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
     $__71 = {default: $__71};
   if (!$__73 || !$__73.__esModule)
     $__73 = {default: $__73};
+  if (!$__75 || !$__75.__esModule)
+    $__75 = {default: $__75};
   var Coalesce = $__0.default;
   var setupContainer = $__2.setupContainer;
   var Container = $__4.default;
@@ -120,10 +122,11 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   var InverseManager = $__65.default;
   var Session = $__67.default;
   var QueryCache = $__69.default;
-  var isEqual = $__71.default;
-  var $__74 = $__73,
-      pluralize = $__74.pluralize,
-      singularize = $__74.singularize;
+  var ModelCache = $__71.default;
+  var isEqual = $__73.default;
+  var $__76 = $__75,
+      pluralize = $__76.pluralize,
+      singularize = $__76.singularize;
   Coalesce.Container = Container;
   Coalesce.setupContainer = setupContainer;
   Coalesce.Adapter = Adapter;
@@ -158,6 +161,7 @@ define("coalesce", ['./namespace', './container', './container', './adapter', '.
   Coalesce.InverseManager = InverseManager;
   Coalesce.Session = Session;
   Coalesce.QueryCache = QueryCache;
+  Coalesce.ModelCache = ModelCache;
   Coalesce.pluralize = pluralize;
   Coalesce.singularize = singularize;
   Coalesce.isEqual = isEqual;
@@ -2662,7 +2666,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.461145bd',
+    VERSION: '0.4.0+dev.df4ccd08',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
@@ -4902,6 +4906,7 @@ define("coalesce/session/session", ['../collections/model_array', '../collection
       dirtyModels.forEach(function(model) {
         model.clientRev += 1;
       }, this);
+      this.emit('willFlush', dirtyModels);
       var promise = this.adapter.flush(this);
       dirtyModels.forEach(function(model) {
         var original = this.originals.getModel(model);
