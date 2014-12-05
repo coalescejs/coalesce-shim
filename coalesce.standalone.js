@@ -3,7 +3,7 @@
  * @copyright Copyright 2014 Gordon L. Hempton and contributors
  * @license   Licensed under MIT license
  *            See https://raw.github.com/coalescejs/coalesce/master/LICENSE
- * @version   0.4.0+dev.df4ccd08
+ * @version   0.4.0+dev.7d986b61
  */
 (function() {
 var define, requireModule, require, requirejs;
@@ -5693,8 +5693,9 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return this._ownFields;
     },
     get fields() {
-      if (this._fields)
+      if (this.hasOwnProperty('_fields')) {
         return this._fields;
+      }
       var res = new Map(),
           parentClass = this.parentType;
       var maps = [this.ownFields];
@@ -5712,8 +5713,9 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return this._fields = res;
     },
     get attributes() {
-      if (this._attributes)
+      if (this.hasOwnProperty('_attributes')) {
         return this._attributes;
+      }
       var res = new Map();
       this.fields.forEach(function(options, name) {
         if (options.kind === 'attribute') {
@@ -5723,8 +5725,9 @@ define("coalesce/model/model", ['../namespace', '../utils/base_class', '../colle
       return this._attributes = res;
     },
     get relationships() {
-      if (this._relationships)
+      if (this.hasOwnProperty('_relationships')) {
         return this._relationships;
+      }
       var res = new Map();
       this.fields.forEach(function(options, name) {
         if (options.kind === 'belongsTo' || options.kind === 'hasMany') {
@@ -5873,7 +5876,7 @@ define("coalesce/namespace", [], function() {
     } catch (e) {}
   }
   var Coalesce = {
-    VERSION: '0.4.0+dev.df4ccd08',
+    VERSION: '0.4.0+dev.7d986b61',
     Promise: Promise,
     ajax: ajax,
     run: Backburner && new Backburner(['actions'])
